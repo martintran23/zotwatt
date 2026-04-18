@@ -83,7 +83,7 @@ export function adviceForDay(
     const fits = maxKw >= a.typicalKw * 0.85
     const summary = fits
       ? `Good overlap: your modeled peak (${windowLabel}) can cover ~${a.typicalKw} kW loads. ${a.notes}`
-      : `Peak model (~${maxKw.toFixed(2)} kW) may clip a full ${a.typicalKw} kW draw—stagger loads or expect grid/supplement. ${a.notes}`
+      : `Peak model (~${maxKw.toFixed(2)} kW) may clip a full ${a.typicalKw} kW draw; stagger loads or expect grid/supplement. ${a.notes}`
     return { appliance: a, summary }
   })
 }
