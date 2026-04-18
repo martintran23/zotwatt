@@ -12,7 +12,7 @@ export async function searchPlaces(query: string): Promise<GeocodeHit[]> {
   if (!q) return []
   const url = new URL('https://geocoding-api.open-meteo.com/v1/search')
   url.searchParams.set('name', q)
-  url.searchParams.set('count', '8')
+  url.searchParams.set('count', '10')
   url.searchParams.set('language', 'en')
   const res = await fetch(url.toString())
   if (!res.ok) throw new Error(`Geocoding failed (${res.status})`)
