@@ -1,7 +1,13 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { AddressSearchBar } from './components/AddressSearchBar.tsx'
+import {
+  fetchAddressSuggestions,
+  isAwsAutocompleteEnabled,
+  resolveAddressSuggestion,
+  type AddressSuggestion,
+} from './lib/addressAutocomplete'
 import { adviceForDay, APPLIANCES } from './lib/appliances'
-import { fetchSolarForecast, searchPlaces, type GeocodeHit } from './lib/openMeteo'
+import { fetchSolarForecast } from './lib/openMeteo'
 import {
   estimateHourlyPower,
   rankPeaks,
@@ -29,7 +35,7 @@ function IconBack() {
 export default function App() {
   const [screen, setScreen] = useState<Screen>('address')
   const [placeQuery, setPlaceQuery] = useState('')
-  const [searchHits, setSearchHits] = useState<GeocodeHit[]>([])
+  const [searchHits, setSearchHits] = useState<AddressSuggestion[]>([])
   const [selectedPlace, setSelectedPlace] = useState<string>('')
 
   const [lat, setLat] = useState('')
@@ -42,8 +48,53 @@ export default function App() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [geoStatus, setGeoStatus] = useState<string | null>(null)
+  const [suggestBusy, setSuggestBusy] = useState(false)
+  const [suggestLastResolvedQuery, setSuggestLastResolvedQuery] = useState('')
+  const suggestGen = useRef(0)
+  const suggestFetchId = useRef(0)
 
   const days = useMemo(() => splitByLocalDay(estimates, timezone), [estimates, timezone])
+
+  const SUGGEST_MIN_CHARS = 2
+  const SUGGEST_DEBOUNCE_MS = 320
+
+  useEffect(() => {
+    const q = placeQuery.trim()
+    if (q.length < SUGGEST_MIN_CHARS) {
+      suggestGen.current += 1
+      suggestFetchId.current += 1
+      const clearId = window.setTimeout(() => {
+        setSearchHits([])
+        setSuggestBusy(false)
+        setSuggestLastResolvedQuery('')
+      }, 0)
+      return () => window.clearTimeout(clearId)
+    }
+
+    const gen = ++suggestGen.current
+    let cancelled = false
+    const timer = window.setTimeout(async () => {
+      const fid = ++suggestFetchId.current
+      setSuggestBusy(true)
+      try {
+        const hits = await fetchAddressSuggestions(q)
+        if (cancelled || gen !== suggestGen.current) return
+        setSearchHits(hits)
+        setSuggestLastResolvedQuery(q)
+      } catch {
+        if (cancelled || gen !== suggestGen.current) return
+        setSearchHits([])
+        setSuggestLastResolvedQuery(q)
+      } finally {
+        if (fid === suggestFetchId.current) setSuggestBusy(false)
+      }
+    }, SUGGEST_DEBOUNCE_MS)
+
+    return () => {
+      cancelled = true
+      window.clearTimeout(timer)
+    }
+  }, [placeQuery])
 
   const runForecast = useCallback(
     async (latitude: number, longitude: number): Promise<boolean> => {
@@ -80,17 +131,22 @@ export default function App() {
     [kWp, performanceRatio],
   )
 
-  const completeWithPlace = useCallback(
-    async (h: GeocodeHit) => {
-      setLat(String(h.latitude))
-      setLon(String(h.longitude))
-      const label = [h.name, h.admin1, h.country_code].filter(Boolean).join(', ')
-      setSelectedPlace(label)
+  const completeWithSuggestion = useCallback(
+    async (s: AddressSuggestion) => {
       setSearchHits([])
-      const ok = await runForecast(h.latitude, h.longitude)
-      if (ok) {
-        setPlaceQuery('')
-        setScreen('report')
+      setError(null)
+      try {
+        const { latitude, longitude, label } = await resolveAddressSuggestion(s)
+        setLat(String(latitude))
+        setLon(String(longitude))
+        setSelectedPlace(label)
+        const ok = await runForecast(latitude, longitude)
+        if (ok) {
+          setPlaceQuery('')
+          setScreen('report')
+        }
+      } catch (e) {
+        setError(e instanceof Error ? e.message : 'Could not resolve this place.')
       }
     },
     [runForecast],
@@ -104,24 +160,21 @@ export default function App() {
       return
     }
     setError(null)
-    setLoading(true)
     try {
-      const hits = await searchPlaces(q)
-      if (!hits.length) {
+      const suggestions = await fetchAddressSuggestions(q)
+      if (!suggestions.length) {
         setSearchHits([])
         setError('No places matched. Try a nearby city or spelling.')
         return
       }
-      if (hits.length === 1) {
-        await completeWithPlace(hits[0])
+      if (suggestions.length === 1) {
+        await completeWithSuggestion(suggestions[0])
         return
       }
-      setSearchHits(hits)
+      setSearchHits(suggestions)
     } catch (e) {
       setSearchHits([])
       setError(e instanceof Error ? e.message : 'Search failed')
-    } finally {
-      setLoading(false)
     }
   }
 
@@ -172,6 +225,16 @@ export default function App() {
   const peaks = rankPeaks(firstDayHours, 4)
   const advice = adviceForDay(firstDayHours, peaks, timezone)
 
+  const trimmedQuery = placeQuery.trim()
+  const showSuggestEmpty =
+    trimmedQuery.length >= SUGGEST_MIN_CHARS &&
+    !suggestBusy &&
+    searchHits.length === 0 &&
+    suggestLastResolvedQuery === trimmedQuery
+  const showSuggestDropdown =
+    trimmedQuery.length >= SUGGEST_MIN_CHARS &&
+    (suggestBusy || searchHits.length > 0 || showSuggestEmpty)
+
   if (screen === 'address') {
     return (
       <div className="welcome">
@@ -186,36 +249,52 @@ export default function App() {
           </p>
         </div>
 
-        <AddressSearchBar
-          id="address"
-          value={placeQuery}
-          onChange={setPlaceQuery}
-          onSubmit={() => void submitAddressSearch()}
-          onGeolocation={useGeolocation}
-          disabled={loading}
-          placeholder="City, neighborhood, or address"
-        />
+        <div className="address-stack">
+          <AddressSearchBar
+            id="address"
+            value={placeQuery}
+            onChange={setPlaceQuery}
+            onSubmit={() => void submitAddressSearch()}
+            onGeolocation={useGeolocation}
+            disabled={loading}
+            placeholder="City, neighborhood, or address"
+          />
+
+          {showSuggestDropdown && (
+            <ul
+              className="search-results"
+              role="listbox"
+              aria-label="Place suggestions"
+            >
+              {suggestBusy && searchHits.length === 0 && (
+                <li className="search-results__hint" role="status">
+                  Searching places…
+                </li>
+              )}
+              {showSuggestEmpty && (
+                <li className="search-results__hint">No matching places. Try another spelling.</li>
+              )}
+              {searchHits.map((s) => (
+                <li key={s.source === 'aws' ? s.placeId : `om-${s.id}`}>
+                  <button
+                    type="button"
+                    role="option"
+                    onMouseDown={(e) => e.preventDefault()}
+                    onClick={() => void completeWithSuggestion(s)}
+                    disabled={loading}
+                  >
+                    {s.label}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
 
         {loading && (
           <p className="loading-banner" role="status">
             Loading…
           </p>
-        )}
-
-        {searchHits.length > 0 && (
-          <ul className="search-results">
-            {searchHits.map((h) => (
-              <li key={h.id}>
-                <button
-                  type="button"
-                  onClick={() => void completeWithPlace(h)}
-                  disabled={loading}
-                >
-                  {[h.name, h.admin1, h.country_code].filter(Boolean).join(', ')}
-                </button>
-              </li>
-            ))}
-          </ul>
         )}
 
         {geoStatus && (
@@ -231,8 +310,12 @@ export default function App() {
         )}
 
         <p className="welcome__hint">
-          Press <strong>Enter</strong> or the arrow to search. Forecast uses Open‑Meteo (radiation &
-          clouds); results are estimates, not meter‑grade.
+          Suggestions appear as you type (2+ characters)
+          {isAwsAutocompleteEnabled()
+            ? ' using Amazon Location autocomplete'
+            : ' using Open‑Meteo place search'}
+          . Press <strong>Enter</strong> or the arrow to search the current text. Forecast uses Open‑Meteo radiation
+          and clouds; results are estimates, not meter‑grade.
         </p>
       </div>
     )
