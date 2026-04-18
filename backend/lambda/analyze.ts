@@ -1,9 +1,3 @@
-// backend/lambda/analyze.ts
-// import { APIGatewayProxyHandler } from "aws-lambda";
-
-// const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
-// const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
-
 interface WeatherHour {
   time: string;
   score: number;
@@ -18,15 +12,15 @@ interface IncomingEvent {
 }
 
 export const handler = async (event: IncomingEvent) => {
-  const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
-  const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
+  const NVIDIA_API_KEY = process.env.NVIDIA_API_KEY;
+  const NVIDIA_URL = "https://integrate.api.nvidia.com/v1/chat/completions";
+
   const {
     hours,
     location,
     appliances = ["EV charger", "dishwasher", "washing machine"],
   } = event;
 
-  // Build a clean summary of the weather data to send to Gemini
   const weatherSummary = hours
     .map(
       (h) =>
@@ -55,23 +49,33 @@ export const handler = async (event: IncomingEvent) => {
     Return only valid JSON, no markdown, no explanation outside the JSON.
   `;
 
-  const geminiRes = await fetch(GEMINI_URL, {
+  const nimRes = await fetch(NVIDIA_URL, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${NVIDIA_API_KEY}`,
+    },
     body: JSON.stringify({
-      contents: [{ parts: [{ text: prompt }] }],
-      generationConfig: { temperature: 0.3 }, // lower = more consistent output
+      model: "meta/llama-3.1-8b-instruct",
+      messages: [{ role: "user", content: prompt }],
+      temperature: 0.3,
     }),
   });
 
-  const geminiData = await geminiRes.json();
+  const nimData = await nimRes.json();
 
-  console.log("Gemini response:", JSON.stringify(geminiData, null, 2)); // ADD THIS
+  console.log("NIM response:", JSON.stringify(nimData, null, 2));
 
-  const rawText = geminiData.candidates[0].content.parts[0].text;
+  if (!nimRes.ok || nimData.error) {
+    throw new Error(
+      `NVIDIA NIM error ${nimData.error?.code ?? nimRes.status}: ${nimData.error?.message ?? "Unknown error"}`
+    );
+  }
+
+  const rawText = nimData.choices[0].message.content;
 
   return {
     statusCode: 200,
-    rawText, // function 3 cleans this up
+    rawText,
   };
 };
