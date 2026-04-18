@@ -1,3 +1,6 @@
+import dotenv from "dotenv";
+dotenv.config({ path: ".env" });
+
 interface WeatherHour {
   time: string;
   score: number;
@@ -12,6 +15,7 @@ interface IncomingEvent {
 }
 
 export const handler = async (event: IncomingEvent) => {
+  // .env should be located in root directory
   const NVIDIA_API_KEY = process.env.NVIDIA_API_KEY;
   const NVIDIA_URL = "https://integrate.api.nvidia.com/v1/chat/completions";
 
@@ -53,7 +57,7 @@ export const handler = async (event: IncomingEvent) => {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "Authorization": `Bearer ${NVIDIA_API_KEY}`,
+      Authorization: `Bearer ${NVIDIA_API_KEY}`,
     },
     body: JSON.stringify({
       model: "meta/llama-3.1-8b-instruct",
@@ -68,7 +72,7 @@ export const handler = async (event: IncomingEvent) => {
 
   if (!nimRes.ok || nimData.error) {
     throw new Error(
-      `NVIDIA NIM error ${nimData.error?.code ?? nimRes.status}: ${nimData.error?.message ?? "Unknown error"}`
+      `NVIDIA NIM error ${nimData.error?.code ?? nimRes.status}: ${nimData.error?.message ?? "Unknown error"}`,
     );
   }
 
