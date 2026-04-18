@@ -1,30 +1,13 @@
-import { analyze_prompt } from "./prompts";
-
-interface ForecastHour {
-  time: string;
-  temperature: number;
-  cloud_cover: number;
-  solar_radiation: number;
-}
-
-interface Location {
-  latitude: number;
-  longitude: number;
-}
-
-interface IncomingEvent {
-  forecast: ForecastHour[];
-  location: Location;
-  appliances?: string[];
-}
-
 const NVIDIA_API_KEY = process.env.NVIDIA_API_KEY;
 const NVIDIA_URL = "https://integrate.api.nvidia.com/v1/chat/completions";
 
-export const handler = async (event: IncomingEvent) => {
+export const handler = async (event) => {
+  // Match Lambda 1's output shape exactly
   const forecast = event.forecast ?? [];
-  // const locationObj = event.location ?? {};
-  // const location = `lat ${locationObj.latitude ?? 33.6839}, lon ${locationObj.longitude ?? -117.8265}`;
+  const locationObj = event.location ?? {};
+  const latitude = locationObj.latitude ?? 33.6839;
+  const longitude = locationObj.longitude ?? -117.8265;
+  const location = `${latitude}, ${longitude}`;
   const appliances = event.appliances ?? [
     "EV charger",
     "dishwasher",
@@ -35,7 +18,7 @@ export const handler = async (event: IncomingEvent) => {
   const daylightHours = forecast.filter((h) => h.solar_radiation > 0);
 
   // Group by day
-  const byDay: Record<string, ForecastHour[]> = {};
+  const byDay = {};
   for (const h of daylightHours) {
     const day = h.time.split("T")[0];
     if (!byDay[day]) byDay[day] = [];
@@ -54,7 +37,26 @@ export const handler = async (event: IncomingEvent) => {
     })
     .join("\n\n");
 
-  const prompt = analyze_prompt(weatherSummary, appliances);
+  const prompt = `
+    You are a solar energy efficiency assistant. A user at coordinates ${location} wants to know the best times over the next 7 days to run high-electricity appliances based on their solar panel output.
+
+    Here is the hourly solar radiation forecast (daylight hours only):
+    ${weatherSummary}
+
+    The user has these appliances: ${appliances.join(", ")}.
+
+    For each appliance, recommend the best time windows across the 7 days to maximize solar energy usage.
+    Be specific with dates and times. Keep each recommendation to 1-2 sentences.
+    Format your response as JSON like this:
+    {
+      "recommendations": [
+        { "appliance": "EV charger", "bestTime": "2024-01-15 11:00 - 14:00", "reason": "..." },
+        { "appliance": "dishwasher", "bestTime": "2024-01-16 12:00 - 13:00", "reason": "..." }
+      ],
+      "summary": "One sentence overall summary of the week's solar conditions"
+    }
+    Return only valid JSON, no markdown, no explanation outside the JSON.
+  `;
 
   const nimRes = await fetch(NVIDIA_URL, {
     method: "POST",

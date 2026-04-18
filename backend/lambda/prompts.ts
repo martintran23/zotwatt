@@ -1,4 +1,4 @@
-export const analyze: (
+export const analyze_prompt: (
   weatherSummary: string,
   appliances: string[],
 ) => string = (weatherSummary, appliances) => {
