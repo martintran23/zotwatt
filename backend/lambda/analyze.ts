@@ -1,57 +1,60 @@
-import dotenv from "dotenv";
-dotenv.config({ path: ".env" });
+import { analyze } from "./prompts";
 
-interface WeatherHour {
+interface ForecastHour {
   time: string;
-  score: number;
-  cloudcover: number;
-  temp?: number;
+  temperature: number;
+  cloud_cover: number;
+  solar_radiation: number;
+}
+
+interface Location {
+  latitude: number;
+  longitude: number;
 }
 
 interface IncomingEvent {
-  hours: WeatherHour[];
-  location: string;
+  forecast: ForecastHour[];
+  location: Location;
   appliances?: string[];
 }
 
+const NVIDIA_API_KEY = process.env.NVIDIA_API_KEY;
+const NVIDIA_URL = "https://integrate.api.nvidia.com/v1/chat/completions";
+
 export const handler = async (event: IncomingEvent) => {
-  // .env should be located in root directory
-  const NVIDIA_API_KEY = process.env.NVIDIA_API_KEY;
-  const NVIDIA_URL = "https://integrate.api.nvidia.com/v1/chat/completions";
+  const forecast = event.forecast ?? [];
+  // const locationObj = event.location ?? {};
+  // const location = `lat ${locationObj.latitude ?? 33.6839}, lon ${locationObj.longitude ?? -117.8265}`;
+  const appliances = event.appliances ?? [
+    "EV charger",
+    "dishwasher",
+    "washing machine",
+  ];
 
-  const {
-    hours,
-    location,
-    appliances = ["EV charger", "dishwasher", "washing machine"],
-  } = event;
+  // Filter to daylight hours only (solar_radiation > 0)
+  const daylightHours = forecast.filter((h) => h.solar_radiation > 0);
 
-  const weatherSummary = hours
-    .map(
-      (h) =>
-        `${h.time}: solar score ${h.score} W/m², cloud cover ${h.cloudcover}%`,
-    )
-    .join("\n");
+  // Group by day
+  const byDay: Record<string, ForecastHour[]> = {};
+  for (const h of daylightHours) {
+    const day = h.time.split("T")[0];
+    if (!byDay[day]) byDay[day] = [];
+    byDay[day].push(h);
+  }
 
-  const prompt = `
-    You are a solar energy efficiency assistant. A user in ${location} wants to know the best times today to run high-electricity appliances based on their solar panel output.
+  const weatherSummary = Object.entries(byDay)
+    .map(([day, dayHours]) => {
+      const hourLines = dayHours
+        .map(
+          (h) =>
+            `  ${h.time.split("T")[1]}: ${h.solar_radiation} W/m², cloud cover ${h.cloud_cover}%, temp ${h.temperature}°C`,
+        )
+        .join("\n");
+      return `${day}:\n${hourLines}`;
+    })
+    .join("\n\n");
 
-    Here is today's hourly solar radiation data:
-    ${weatherSummary}
-
-    The user has these appliances: ${appliances.join(", ")}.
-
-    For each appliance, recommend the best 1-2 hour windows to use it today to maximize solar energy usage.
-    Be specific with times. Keep each recommendation to 1-2 sentences.
-    Format your response as JSON like this:
-    {
-      "recommendations": [
-        { "appliance": "EV charger", "bestTime": "11:00 AM - 2:00 PM", "reason": "..." },
-        { "appliance": "dishwasher", "bestTime": "12:00 PM - 1:00 PM", "reason": "..." }
-      ],
-      "summary": "One sentence overall summary of today's solar conditions"
-    }
-    Return only valid JSON, no markdown, no explanation outside the JSON.
-  `;
+  const prompt = analyze(weatherSummary, appliances);
 
   const nimRes = await fetch(NVIDIA_URL, {
     method: "POST",
@@ -63,11 +66,11 @@ export const handler = async (event: IncomingEvent) => {
       model: "meta/llama-3.1-8b-instruct",
       messages: [{ role: "user", content: prompt }],
       temperature: 0.3,
+      max_tokens: 1024,
     }),
   });
 
   const nimData = await nimRes.json();
-
   console.log("NIM response:", JSON.stringify(nimData, null, 2));
 
   if (!nimRes.ok || nimData.error) {
@@ -78,8 +81,23 @@ export const handler = async (event: IncomingEvent) => {
 
   const rawText = nimData.choices[0].message.content;
 
+  // Strip markdown backticks if model added them
+  const cleaned = rawText.replace(/```json|```/g, "").trim();
+
+  // Validate JSON before passing to Lambda 3
+  let parsed;
+  try {
+    parsed = JSON.parse(cleaned);
+  } catch (e) {
+    throw new Error(`NVIDIA returned invalid JSON: ${cleaned}`);
+  }
+
   return {
     statusCode: 200,
-    rawText,
+    headers: { "Access-Control-Allow-Origin": "*" },
+    body: JSON.stringify({
+      recommendations: parsed.recommendations,
+      summary: parsed.summary,
+    }),
   };
 };
