@@ -3933,3 +3933,453 @@ h3,
   color: #a1a1aa;
   opacity: 0.85;
 }
+
+/* ——— Email Notification Preview ——— */
+.zw-notif-page {
+  max-width: 72rem;
+  margin: 0 auto;
+}
+
+.zw-notif-header {
+  margin-bottom: 2.5rem;
+}
+
+.zw-notif-title {
+  margin: 0 0 0.5rem;
+  font-family: var(--zw-font-headline);
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  color: var(--sd-on-surface);
+}
+
+.zw-notif-subtitle {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--sd-on-surface-variant);
+  max-width: 36rem;
+}
+
+.zw-notif-body {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+  align-items: flex-start;
+}
+
+@media (min-width: 900px) {
+  .zw-notif-body {
+    grid-template-columns: 1fr 340px;
+  }
+}
+
+/* Email preview card */
+.zw-email-card {
+  background: #fff;
+  border-radius: 1.5rem;
+  border: 1px solid var(--zw-border);
+  box-shadow: var(--zw-shadow-soft);
+  padding: 1.75rem;
+}
+
+.zw-email-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.zw-email-brand-name {
+  font-family: var(--zw-font-headline);
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--sd-on-surface);
+}
+
+.zw-email-heading {
+  margin: 0 0 0.2rem;
+  font-family: var(--zw-font-headline);
+  font-size: 1.5rem;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  color: var(--sd-on-surface);
+}
+
+.zw-email-subheading {
+  margin: 0 0 1.5rem;
+  font-size: 0.875rem;
+  color: var(--sd-on-surface-variant);
+}
+
+.zw-email-rec {
+  display: flex;
+  align-items: stretch;
+  gap: 1rem;
+  background: #fdf6e9;
+  border: 1px solid #f5dfa0;
+  border-radius: 1rem;
+  padding: 1.25rem;
+  margin-bottom: 1.25rem;
+  overflow: hidden;
+}
+
+.zw-email-rec__content {
+  flex: 1;
+}
+
+.zw-email-rec__tag {
+  display: block;
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #b45309;
+  margin-bottom: 0.5rem;
+}
+
+.zw-email-rec__title {
+  margin: 0 0 0.5rem;
+  font-family: var(--zw-font-headline);
+  font-size: 1.25rem;
+  font-weight: 900;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: #78350f;
+}
+
+.zw-email-rec__body {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.55;
+  color: #92400e;
+}
+
+.zw-email-rec__img {
+  display: none;
+  width: 120px;
+  flex-shrink: 0;
+  border-radius: 0.75rem;
+  background: linear-gradient(145deg, #e8d5b7 0%, #c9a87c 100%);
+}
+
+@media (min-width: 480px) {
+  .zw-email-rec__img {
+    display: block;
+  }
+}
+
+.zw-email-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.zw-email-stat {
+  border-radius: 0.75rem;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.zw-email-stat--light {
+  background: #f3f4f6;
+}
+
+.zw-email-stat--blue {
+  background: #e0f2fe;
+}
+
+.zw-email-stat__icon {
+  color: #6b7280;
+  margin-bottom: 0.15rem;
+}
+
+.zw-email-stat--blue .zw-email-stat__icon {
+  color: #0c6780;
+}
+
+.zw-email-stat__label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.zw-email-stat--blue .zw-email-stat__label {
+  color: #0c6780;
+}
+
+.zw-email-stat__value {
+  font-family: var(--zw-font-headline);
+  font-size: 1.05rem;
+  font-weight: 900;
+  color: var(--sd-on-surface);
+  line-height: 1.2;
+}
+
+.zw-email-stat__value--lg {
+  font-size: 1.35rem;
+  color: #0c6780;
+}
+
+.zw-email-stat__note {
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.zw-email-outlook {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 0;
+  border-top: 1px solid var(--zw-border);
+  margin-bottom: 1.25rem;
+}
+
+.zw-email-outlook__title {
+  margin: 0 0 0.2rem;
+  font-family: var(--zw-font-headline);
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--sd-on-surface);
+}
+
+.zw-email-outlook__body {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--sd-on-surface-variant);
+}
+
+.zw-email-footer-bar {
+  border-top: 1px solid var(--zw-border);
+  padding-top: 1.25rem;
+  text-align: center;
+}
+
+.zw-email-footer-bar__text {
+  margin: 0 0 0.75rem;
+  font-size: 0.75rem;
+  color: #9ca3af;
+  line-height: 1.5;
+}
+
+.zw-email-footer-bar__links {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+.zw-email-footer-bar__link {
+  color: var(--sd-on-surface);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.zw-email-footer-bar__link:hover {
+  text-decoration: underline;
+}
+
+/* Delivery settings panel */
+.zw-delivery-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.zw-delivery-card {
+  background: #fff;
+  border-radius: 1.5rem;
+  border: 1px solid var(--zw-border);
+  box-shadow: var(--zw-shadow-soft);
+  padding: 1.5rem;
+}
+
+.zw-delivery-title {
+  margin: 0 0 1.5rem;
+  font-family: var(--zw-font-headline);
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.zw-delivery-label {
+  display: block;
+  margin: 0 0 0.5rem;
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--sd-on-surface-variant);
+}
+
+.zw-delivery-time-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #f3f4f6;
+  border-radius: 0.75rem;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.zw-delivery-time-value {
+  font-family: var(--zw-font-headline);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--sd-on-surface);
+}
+
+.zw-delivery-time-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-family: var(--zw-font-headline);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--sd-on-surface);
+  outline: none;
+}
+
+.zw-delivery-time-edit {
+  border: none;
+  background: none;
+  padding: 0.25rem;
+  cursor: pointer;
+  color: var(--sd-on-surface-variant);
+  display: flex;
+  align-items: center;
+  border-radius: 0.35rem;
+}
+
+.zw-delivery-time-edit:hover {
+  color: var(--sd-amber);
+}
+
+.zw-delivery-modes {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-bottom: 1.5rem;
+}
+
+.zw-delivery-mode {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.85rem 1.1rem;
+  border-radius: 0.75rem;
+  border: 1px solid transparent;
+  font-family: var(--zw-font-body);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  background: #f3f4f6;
+  color: var(--sd-on-surface-variant);
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.zw-delivery-mode--active {
+  background: var(--zw-primary);
+  color: #6b4b00;
+  border-color: var(--zw-primary-dark);
+}
+
+.zw-delivery-mode--ghost {
+  background: #f3f4f6;
+  color: var(--sd-on-surface-variant);
+}
+
+.zw-delivery-toggle {
+  width: 36px;
+  height: 20px;
+  border-radius: 999px;
+  background: #d1d5db;
+  position: relative;
+  flex-shrink: 0;
+  transition: background 0.15s;
+  display: inline-block;
+}
+
+.zw-delivery-toggle::after {
+  content: '';
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #fff;
+  top: 3px;
+  left: 3px;
+  transition: transform 0.15s;
+}
+
+.zw-delivery-toggle--on {
+  background: #374151;
+}
+
+.zw-delivery-toggle--on::after {
+  transform: translateX(16px);
+}
+
+.zw-delivery-update-btn {
+  width: 100%;
+  padding: 0.875rem 1rem;
+  border-radius: 0.75rem;
+  border: none;
+  background: #374151;
+  color: #fff;
+  font-family: var(--zw-font-headline);
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: filter 0.15s ease, transform 0.1s ease;
+}
+
+.zw-delivery-update-btn:hover {
+  filter: brightness(1.1);
+}
+
+.zw-delivery-update-btn:active {
+  transform: scale(0.98);
+}
+
+.zw-delivery-efficiency {
+  background: #f3f4f6;
+  border-radius: 1.25rem;
+  padding: 1.25rem 1.5rem;
+  border: 1px solid var(--zw-border);
+}
+
+.zw-delivery-efficiency__title {
+  margin: 0 0 0.35rem;
+  font-family: var(--zw-font-headline);
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--sd-on-surface);
+}
+
+.zw-delivery-efficiency__body {
+  margin: 0 0 0.65rem;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--sd-on-surface-variant);
+}
+
+.zw-delivery-efficiency__link {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--sd-amber);
+  text-decoration: none;
+}
+
+.zw-delivery-efficiency__link:hover {
+  text-decoration: underline;
+}

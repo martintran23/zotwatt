@@ -30,6 +30,39 @@ function IconSun({ className }: { className?: string }) {
   )
 }
 
+function IconClear({ className }: { className?: string }) {
+  return (
+    <svg className={className} width="56" height="56" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <circle cx="12" cy="12" r="4" fill="currentColor" />
+      <path
+        d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"
+        stroke="currentColor"
+        strokeWidth="1.75"
+        strokeLinecap="round"
+      />
+    </svg>
+  )
+}
+
+function IconMostlySunny({ className }: { className?: string }) {
+  return (
+    <svg className={className} width="56" height="56" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <circle cx="10" cy="9" r="3.5" fill="currentColor" />
+      <path
+        d="M10 3.5v1.5M10 14v1.5M4.5 9H6M14 9h1.5M5.93 5.43l1.06 1.06M13.01 12.51l1.06 1.06M5.93 12.57l1.06-1.06M13.01 5.49l1.06-1.06"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+      <path
+        d="M8 19h9a3 3 0 0 0 0-6 3 3 0 0 0-5.65-1A3.5 3.5 0 0 0 8 19z"
+        fill="currentColor"
+        opacity="0.4"
+      />
+    </svg>
+  )
+}
+
 function IconPartlyCloudy({ className }: { className?: string }) {
   return (
     <svg className={className} width="56" height="56" viewBox="0 0 24 24" fill="none" aria-hidden>
@@ -41,6 +74,54 @@ function IconPartlyCloudy({ className }: { className?: string }) {
       <circle cx="14" cy="10" r="3.5" fill="currentColor" />
     </svg>
   )
+}
+
+function IconMostlyCloudy({ className }: { className?: string }) {
+  return (
+    <svg className={className} width="56" height="56" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <circle cx="15" cy="7" r="2.5" fill="currentColor" opacity="0.6" />
+      <path
+        d="M15 3v1M15 10v1M11 7h1M18 7h1"
+        stroke="currentColor"
+        strokeWidth="1.25"
+        strokeLinecap="round"
+        opacity="0.6"
+      />
+      <path
+        d="M5 19h13a4.5 4.5 0 0 0 0-9 4.5 4.5 0 0 0-8.72-1.21A5 5 0 0 0 5 19z"
+        fill="currentColor"
+        opacity="0.45"
+      />
+      <path
+        d="M3 19h12a3.5 3.5 0 0 0 0-7 3.5 3.5 0 0 0-6.78-.94A4 4 0 0 0 3 19z"
+        fill="currentColor"
+      />
+    </svg>
+  )
+}
+
+function IconOvercast({ className }: { className?: string }) {
+  return (
+    <svg className={className} width="56" height="56" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path
+        d="M4 17h14a4 4 0 0 0 0-8 4 4 0 0 0-7.75-1.08A5 5 0 0 0 4 17z"
+        fill="currentColor"
+        opacity="0.4"
+      />
+      <path
+        d="M2 20h14a4 4 0 0 0 0-8 4 4 0 0 0-7.75-1.08A5 5 0 0 0 2 20z"
+        fill="currentColor"
+      />
+    </svg>
+  )
+}
+
+function WeatherIcon({ avgCloud, className }: { avgCloud: number; className?: string }) {
+  if (avgCloud < 15) return <IconClear className={className} />
+  if (avgCloud < 35) return <IconMostlySunny className={className} />
+  if (avgCloud < 55) return <IconPartlyCloudy className={className} />
+  if (avgCloud < 75) return <IconMostlyCloudy className={className} />
+  return <IconOvercast className={className} />
 }
 
 function IconOpenNew({ className }: { className?: string }) {
@@ -116,9 +197,12 @@ function pickChartBars(hours: HourEstimate[], barCount: number): { bars: HourEst
 }
 
 function skyLabel(avgCloud: number): string {
-  if (avgCloud < 35) return 'Sunny'
-  if (avgCloud < 65) return 'Partly Cloudy'
-  return 'Cloudy'
+  if (avgCloud < 15) return 'Clear'
+  if (avgCloud < 35) return 'Mostly Sunny'
+  if (avgCloud < 55) return 'Partly Cloudy'
+  if (avgCloud < 75) return 'Mostly Cloudy'
+  if (avgCloud < 90) return 'Overcast'
+  return 'Heavy Overcast'
 }
 
 function atmosphereCopy(avgCloud: number): string {
@@ -227,7 +311,7 @@ export function TodayGlowDashboard({ hours, timeZone, selectedPlace, kWp, onOpen
               <p className="sd-card--atmosphere__tag">Atmosphere</p>
               <h3 className="sd-card--atmosphere__sky">{sky}</h3>
             </div>
-            <IconPartlyCloudy className="sd-card--atmosphere__weather-icon" />
+            <WeatherIcon avgCloud={avgCloud} className="sd-card--atmosphere__weather-icon" />
           </div>
           <div className="sd-card--atmosphere__blurb">
             <p>{atmosphereCopy(avgCloud)}</p>

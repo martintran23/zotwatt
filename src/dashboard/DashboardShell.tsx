@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 
-export type Tab = 'flow' | 'forecast' | 'schedule' | 'impact' | 'sms'
+export type Tab = 'flow' | 'forecast' | 'schedule' | 'impact' | 'sms' | 'notifications'
 
 type Props = {
   active: Tab
@@ -96,7 +96,8 @@ export function DashboardShell({
   onCloseWhyMatters,
 }: Props) {
   const smsLayout = active === 'sms'
-  const showFab = active !== 'sms'
+  const fullWidthLayout = active === 'sms' || active === 'notifications'
+  const showFab = !fullWidthLayout
 
   /** Why It Matters is only reflected in the top nav; sidebar stays neutral (no false “Impact” active). */
   const sideNavActive = (tab: Tab) => !whyMatters && active === tab
@@ -162,7 +163,7 @@ export function DashboardShell({
       )}
 
       <div className="sd-frame">
-        {!smsLayout && (
+        {!fullWidthLayout && (
           <aside className="sd-sidenav" aria-label="App sections">
             <div className="sd-sidenav__brand-block">
               <h2 className="sd-sidenav__title">SolarShift</h2>
@@ -179,7 +180,7 @@ export function DashboardShell({
           </aside>
         )}
 
-        <div className={`sd-main-scroll${smsLayout ? ' sd-main-scroll--sms' : ''}`}>
+        <div className={`sd-main-scroll${fullWidthLayout ? ' sd-main-scroll--sms' : ''}`}>
           <main
             className={`sd-main${showFab ? ' sd-main--fab' : ''}${whyMatters ? ' sd-main--why' : ''}`}
           >
@@ -188,7 +189,7 @@ export function DashboardShell({
         </div>
       </div>
 
-      {!smsLayout && (
+      {!fullWidthLayout && (
         <div className="sd-mobile-nav" aria-label="Mobile sections">
           <nav className="sd-mobile-nav__inner">
             {navItem('flow', 'Optimize', IconOptimize, 'mobile')}

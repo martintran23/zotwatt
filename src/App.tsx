@@ -14,6 +14,7 @@ import { ForecastTab } from './dashboard/ForecastTab.tsx'
 import { ScheduleTab } from './dashboard/ScheduleTab.tsx'
 import { ImpactTab } from './dashboard/ImpactTab.tsx'
 import { SmsTab } from './dashboard/SmsTab.tsx'
+import { NotificationsTab } from './dashboard/NotificationsTab.tsx'
 import { LocationModal } from './dashboard/LocationModal.tsx'
 import { AddressWelcome } from './dashboard/AddressWelcome.tsx'
 import { WhyItMattersPage } from './dashboard/WhyItMattersPage.tsx'
@@ -324,6 +325,8 @@ export default function App() {
     />
   ) : tab === 'impact' ? (
     <ImpactTab days={days} />
+  ) : tab === 'notifications' ? (
+    <NotificationsTab />
   ) : (
     <SmsTab />
   )
@@ -334,7 +337,7 @@ export default function App() {
         active={tab}
         onTab={goTab}
         onFab={() => setLocationOpen(true)}
-        onSms={() => goTab('sms')}
+        onSms={() => goTab('notifications')}
         whyMatters={whyMatters}
         onOpenWhyMatters={() => setWhyMatters(true)}
         onCloseWhyMatters={() => setWhyMatters(false)}
