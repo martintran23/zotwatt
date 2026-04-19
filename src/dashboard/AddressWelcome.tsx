@@ -1,9 +1,11 @@
-import { useEffect, useState } from 'react'
 import type { AddressSuggestion } from '../lib/addressAutocomplete'
+import { AddressSearchBar } from '../components/AddressSearchBar.tsx'
 
 type Props = {
   placeQuery: string
   onPlaceQueryChange: (q: string) => void
+  welcomeEmail: string
+  onWelcomeEmailChange: (email: string) => void
   onSubmitSearch: () => void
   onGeolocation: () => void
   loading: boolean
@@ -14,21 +16,6 @@ type Props = {
   showSuggestDropdown: boolean
   showSuggestEmpty: boolean
   onPickSuggestion: (s: AddressSuggestion) => void
-}
-
-function splitPlace(q: string): { city: string; state: string } {
-  const t = q.trim()
-  if (!t) return { city: '', state: '' }
-  const i = t.lastIndexOf(',')
-  if (i <= 0 || i >= t.length - 1) return { city: t, state: '' }
-  return { city: t.slice(0, i).trim(), state: t.slice(i + 1).trim() }
-}
-
-function buildPlaceQuery(city: string, state: string): string {
-  const c = city.trim()
-  const s = state.trim()
-  if (c && s) return `${c}, ${s}`
-  return c || s
 }
 
 function IconBell() {
@@ -96,6 +83,8 @@ function HeroDecor() {
 export function AddressWelcome({
   placeQuery,
   onPlaceQueryChange,
+  welcomeEmail,
+  onWelcomeEmailChange,
   onSubmitSearch,
   onGeolocation,
   loading,
@@ -107,28 +96,6 @@ export function AddressWelcome({
   showSuggestEmpty,
   onPickSuggestion,
 }: Props) {
-  const init = splitPlace(placeQuery)
-  const [city, setCity] = useState(init.city)
-  const [state, setState] = useState(init.state)
-  const [email, setEmail] = useState('')
-
-  useEffect(() => {
-    const { city: c, state: s } = splitPlace(placeQuery)
-    setCity(c)
-    setState(s)
-  }, [placeQuery])
-
-  useEffect(() => {
-    onPlaceQueryChange(buildPlaceQuery(city, state))
-  }, [city, state, onPlaceQueryChange])
-
-  const onKeyEnter = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      e.preventDefault()
-      void onSubmitSearch()
-    }
-  }
-
   return (
     <div className="ss-landing">
       <header className="ss-header">
@@ -170,36 +137,15 @@ export function AddressWelcome({
 
           <div className="ss-form-card">
             <div className="address-stack ss-form-card__stack">
-              <div className="ss-form-row2">
-                <div className="ss-field">
-                  <label htmlFor="ss-city">City</label>
-                  <input
-                    id="ss-city"
-                    name="city"
-                    type="text"
-                    autoComplete="address-level2"
-                    placeholder="e.g. San Francisco"
-                    value={city}
-                    onChange={(e) => setCity(e.target.value)}
-                    onKeyDown={onKeyEnter}
-                    disabled={loading}
-                  />
-                </div>
-                <div className="ss-field">
-                  <label htmlFor="ss-state">State</label>
-                  <input
-                    id="ss-state"
-                    name="state"
-                    type="text"
-                    autoComplete="address-level1"
-                    placeholder="e.g. CA"
-                    value={state}
-                    onChange={(e) => setState(e.target.value)}
-                    onKeyDown={onKeyEnter}
-                    disabled={loading}
-                  />
-                </div>
-              </div>
+              <AddressSearchBar
+                id="ss-address"
+                value={placeQuery}
+                onChange={onPlaceQueryChange}
+                onSubmit={() => void onSubmitSearch()}
+                onGeolocation={onGeolocation}
+                disabled={loading}
+                placeholder="City, state, or address (e.g. Irvine, CA)"
+              />
 
               {showSuggestDropdown && (
                 <ul className="search-results" role="listbox" aria-label="Place suggestions">
@@ -236,8 +182,8 @@ export function AddressWelcome({
                 type="email"
                 autoComplete="email"
                 placeholder="your@email.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                value={welcomeEmail}
+                onChange={(e) => onWelcomeEmailChange(e.target.value)}
                 disabled={loading}
               />
             </div>
@@ -248,7 +194,8 @@ export function AddressWelcome({
             </button>
 
             <p className="ss-form-hint">
-              Suggestions appear as you type (city and state). Forecast uses Open‑Meteo; results are estimates only.
+              Use the pin to save your location, enter your email, then tap Get My Solar Forecast. Suggestions appear as
+              you type. Forecast uses Open‑Meteo; results are estimates only.
             </p>
           </div>
 
@@ -260,12 +207,6 @@ export function AddressWelcome({
               <IconCheck /> 100% green energy
             </span>
           </div>
-
-          <p className="ss-geo">
-            <button type="button" className="zw-inline-link" onClick={onGeolocation} disabled={loading}>
-              Use my current location
-            </button>
-          </p>
 
           {geoStatus && (
             <p

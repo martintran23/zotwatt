@@ -7,8 +7,9 @@ import {
 } from './lib/addressAutocomplete'
 import { estimateHourlyPower, rankPeaks, splitByLocalDay, type HourEstimate } from './lib/solarModel'
 import { fetchSolarForecast } from './lib/openMeteo'
+import { isWelcomeEmailValid } from './lib/welcomeEmail'
 import { DashboardShell, type Tab } from './dashboard/DashboardShell.tsx'
-import { FlowTab } from './dashboard/FlowTab.tsx'
+import { TodayGlowDashboard } from './dashboard/TodayGlowDashboard.tsx'
 import { ForecastTab } from './dashboard/ForecastTab.tsx'
 import { ScheduleTab } from './dashboard/ScheduleTab.tsx'
 import { ImpactTab } from './dashboard/ImpactTab.tsx'
@@ -24,6 +25,7 @@ export default function App() {
   const [locationOpen, setLocationOpen] = useState(false)
 
   const [placeQuery, setPlaceQuery] = useState('')
+  const [welcomeEmail, setWelcomeEmail] = useState('')
   const [searchHits, setSearchHits] = useState<AddressSuggestion[]>([])
   const [selectedPlace, setSelectedPlace] = useState('')
 
@@ -124,6 +126,10 @@ export default function App() {
     async (s: AddressSuggestion) => {
       setSearchHits([])
       setError(null)
+      if (phase === 'address' && !isWelcomeEmailValid(welcomeEmail)) {
+        setError('Enter a valid email, then choose a place or tap Get My Solar Forecast.')
+        return
+      }
       try {
         const { latitude, longitude, label } = await resolveAddressSuggestion(s)
         setLat(String(latitude))
@@ -132,6 +138,7 @@ export default function App() {
         const ok = await runForecast(latitude, longitude)
         if (ok) {
           setPlaceQuery('')
+          setWelcomeEmail('')
           setLocationOpen(false)
           setPhase('dashboard')
         }
@@ -139,17 +146,34 @@ export default function App() {
         setError(e instanceof Error ? e.message : 'Could not resolve this place.')
       }
     },
-    [runForecast],
+    [phase, welcomeEmail, runForecast],
   )
 
   const submitAddressSearch = async () => {
     setGeoStatus(null)
-    const q = placeQuery.trim()
-    if (!q) {
-      setError('Enter your city and state, or use your location.')
+    const requireWelcomeEmail = phase === 'address'
+    if (requireWelcomeEmail && !isWelcomeEmailValid(welcomeEmail)) {
+      setError('Enter a valid email, then run your forecast.')
       return
     }
     setError(null)
+    const q = placeQuery.trim()
+    if (!q) {
+      const la = Number(lat)
+      const lo = Number(lon)
+      if (selectedPlace === 'Your location' && Number.isFinite(la) && Number.isFinite(lo)) {
+        const ok = await runForecast(la, lo)
+        if (ok) {
+          setPlaceQuery('')
+          setWelcomeEmail('')
+          setLocationOpen(false)
+          setPhase('dashboard')
+        }
+        return
+      }
+      setError('Enter a city, state, or address, or use your location.')
+      return
+    }
     try {
       const suggestions = await fetchAddressSuggestions(q)
       if (!suggestions.length) {
@@ -168,7 +192,7 @@ export default function App() {
     }
   }
 
-  const useGeolocation = () => {
+  const useGeolocation = useCallback(() => {
     if (!navigator.geolocation) {
       setGeoStatus('Geolocation is not available in this browser.')
       return
@@ -184,6 +208,11 @@ export default function App() {
         setLon(String(lo.toFixed(5)))
         setSelectedPlace('Your location')
         setGeoStatus(null)
+        if (phase === 'address') {
+          setPlaceQuery('')
+          setGeoStatus('Location saved. Enter your email, then tap Get My Solar Forecast.')
+          return
+        }
         const ok = await runForecast(la, lo)
         if (ok) {
           setPlaceQuery('')
@@ -196,7 +225,7 @@ export default function App() {
       },
       { enableHighAccuracy: false, timeout: 12_000 },
     )
-  }
+  }, [phase, runForecast])
 
   const goBackToAddress = useCallback(() => {
     setPhase('address')
@@ -221,14 +250,6 @@ export default function App() {
   const firstDay = days[0]
   const firstDayHours = firstDay?.hours ?? []
   const peaks = rankPeaks(firstDayHours, 4)
-  const peakLabel =
-    peaks[0] != null
-      ? new Intl.DateTimeFormat(undefined, {
-          timeZone: timezone,
-          hour: 'numeric',
-          minute: '2-digit',
-        }).format(new Date(peaks[0].timeIso))
-      : '—'
 
   const trimmedQuery = placeQuery.trim()
   const showSuggestEmpty =
@@ -249,6 +270,8 @@ export default function App() {
       <AddressWelcome
         placeQuery={placeQuery}
         onPlaceQueryChange={setPlaceQuery}
+        welcomeEmail={welcomeEmail}
+        onWelcomeEmailChange={setWelcomeEmail}
         onSubmitSearch={() => void submitAddressSearch()}
         onGeolocation={useGeolocation}
         loading={loading}
@@ -269,7 +292,13 @@ export default function App() {
         Loading forecast…
       </p>
     ) : tab === 'flow' ? (
-      <FlowTab hours={firstDayHours} timeZone={timezone} peakLabel={peakLabel} />
+      <TodayGlowDashboard
+        hours={firstDayHours}
+        timeZone={timezone}
+        selectedPlace={selectedPlace}
+        kWp={kWp}
+        onOpenSchedule={() => setTab('schedule')}
+      />
     ) : tab === 'forecast' ? (
       <ForecastTab days={days} timeZone={timezone} peaks={peaks} />
     ) : tab === 'schedule' ? (
