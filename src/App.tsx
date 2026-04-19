@@ -7,7 +7,7 @@ import {
 } from './lib/addressAutocomplete'
 import { estimateHourlyPower, rankPeaks, splitByLocalDay, type HourEstimate } from './lib/solarModel'
 import { isPostalOnlyQuery } from './lib/placeQueryPolicy'
-import { fetchSolarForecast } from './lib/openMeteo'
+import { fetchForecastWithOptimizeFirst } from './lib/optimizeApi'
 import { isWelcomeEmailValid } from './lib/welcomeEmail'
 import { DashboardShell, type Tab } from './dashboard/DashboardShell.tsx'
 import { TodayGlowDashboard } from './dashboard/TodayGlowDashboard.tsx'
@@ -111,7 +111,13 @@ export default function App() {
       setLoading(true)
       setError(null)
       try {
-        const forecast = await fetchSolarForecast(latitude, longitude)
+        const forecast = await fetchForecastWithOptimizeFirst(
+          latitude,
+          longitude,
+          peakKWp,
+          pr,
+          selectedPlace || undefined,
+        )
         setTimezone(forecast.timezone)
         setEstimates(estimateHourlyPower(forecast, peakKWp, pr))
         return true
@@ -123,7 +129,7 @@ export default function App() {
         setLoading(false)
       }
     },
-    [kWp, performanceRatio],
+    [kWp, performanceRatio, selectedPlace],
   )
 
   const completeWithSuggestion = useCallback(
