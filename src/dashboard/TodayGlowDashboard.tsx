@@ -302,7 +302,7 @@ export function TodayGlowDashboard({ hours, timeZone, selectedPlace, kWp }: Prop
               <div className="sd-card--solar-window__icon-wrap" aria-hidden>
                 <IconBolt className="sd-card--solar-window__bolt" />
               </div>
-              <span className="sd-card--solar-window__label">Solar Window</span>
+              <span className="sd-card--solar-window__label">Peak Hours</span>
             </div>
             <h2 className="sd-card--solar-window__headline">
               Best time to run appliances today:

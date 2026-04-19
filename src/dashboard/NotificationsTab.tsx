@@ -226,13 +226,6 @@ export function NotificationsTab() {
               Update Settings
             </button>
           </div>
-
-          <div className="zw-delivery-efficiency">
-            <h3 className="zw-delivery-efficiency__title">Live Efficiency</h3>
-            <p className="zw-delivery-efficiency__body">
-              Your current production is 15% higher than the regional average.
-            </p>
-          </div>
         </aside>
       </div>
     </div>
