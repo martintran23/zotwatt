@@ -10,7 +10,7 @@ type Props = {
   children: ReactNode
   whyMatters: boolean
   onOpenWhyMatters: () => void
-  onCloseWhyMatters: () => void
+  onBrandClick: () => void
 }
 
 function IconOptimize({ className }: { className?: string }) {
@@ -93,12 +93,15 @@ export function DashboardShell({
   children,
   whyMatters,
   onOpenWhyMatters,
-  onCloseWhyMatters,
+  onBrandClick,
 }: Props) {
   const smsLayout = active === 'sms'
-  /** Only SMS uses the compact strip without sidebar; other tabs keep the left rail. */
+  /** SMS uses the compact strip without sidebar; Why It Matters and Notifications hide the rail. */
   const fullWidthLayout = active === 'sms'
+  const showChromeNav = active !== 'sms' && !whyMatters && active !== 'notifications'
   const showFab = !fullWidthLayout
+  /** Mobile bottom nav is hidden; lower the FAB so it is not floating above an empty strip. */
+  const relaxFabClearance = !showChromeNav && !smsLayout
 
   /** Why It Matters is only reflected in the top nav; sidebar stays neutral (no false “Impact” active). */
   const sideNavActive = (tab: Tab) => !whyMatters && active === tab
@@ -115,15 +118,24 @@ export function DashboardShell({
   )
 
   return (
-    <div className={`sd-app${smsLayout ? ' sd-app--sms' : ''}`}>
+    <div
+      className={`sd-app${smsLayout ? ' sd-app--sms' : ''}${relaxFabClearance ? ' sd-app--relax-fab' : ''}`}
+    >
       <nav className="sd-topnav" aria-label="Primary">
         <div className="sd-topnav__inner">
-          <div className="sd-topnav__brand">SolarShift</div>
+          <button
+            type="button"
+            className="sd-topnav__brand sd-topnav__brand--btn"
+            onClick={onBrandClick}
+            aria-label="Return to address entry"
+          >
+            SolarShift
+          </button>
           <div className="sd-topnav__links">
             <button
               type="button"
               className={`sd-topnav__link sd-topnav__link--btn${!whyMatters ? ' sd-topnav__link--active' : ''}`}
-              onClick={onCloseWhyMatters}
+              onClick={() => onTab('flow')}
             >
               Dashboard
             </button>
@@ -164,7 +176,7 @@ export function DashboardShell({
       )}
 
       <div className="sd-frame">
-        {!fullWidthLayout && (
+        {showChromeNav && (
           <aside className="sd-sidenav" aria-label="App sections">
             <div className="sd-sidenav__brand-block">
               <h2 className="sd-sidenav__title">SolarShift</h2>
@@ -190,7 +202,7 @@ export function DashboardShell({
         </div>
       </div>
 
-      {!fullWidthLayout && (
+      {showChromeNav && (
         <div className="sd-mobile-nav" aria-label="Mobile sections">
           <nav className="sd-mobile-nav__inner">
             {navItem('flow', 'Optimize', IconOptimize, 'mobile')}

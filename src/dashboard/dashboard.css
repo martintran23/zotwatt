@@ -77,12 +77,29 @@ h3,
   z-index: 5;
 }
 
+.ss-header--minimal {
+  justify-content: flex-start;
+}
+
 .ss-header__logo {
   font-family: var(--zw-font-headline);
   font-size: 1.2rem;
   font-weight: 800;
   letter-spacing: -0.02em;
   color: #1a1a1a;
+}
+
+.ss-header__logo--btn {
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  text-align: left;
+}
+
+.ss-header__logo--btn:hover {
+  color: var(--zw-tertiary);
 }
 
 .ss-header__nav {
@@ -2133,6 +2150,19 @@ h3,
   color: var(--sd-zinc-900);
 }
 
+.sd-topnav__brand--btn {
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  text-align: left;
+}
+
+.sd-topnav__brand--btn:hover {
+  color: var(--zw-tertiary);
+}
+
 .sd-topnav__links {
   display: none;
   align-items: center;
@@ -2426,6 +2456,13 @@ h3,
   transform: scale(0.96);
 }
 
+/* Why It Matters / Notifications hide the mobile bottom bar; sit the FAB on the safe-area inset. */
+@media (max-width: 899px) {
+  .sd-app--relax-fab .sd-fab {
+    bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
+  }
+}
+
 @media (min-width: 900px) {
   .sd-fab {
     right: 1.5rem;
@@ -2602,8 +2639,8 @@ h3,
 }
 
 .sd-card--solar-window__bolt {
-  width: 1.15rem;
-  height: 1.15rem;
+  width: 1.35rem;
+  height: 1.35rem;
 }
 
 .sd-card--solar-window__label {
@@ -3777,10 +3814,14 @@ h3,
   position: relative;
   z-index: 1;
   max-width: 48rem;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
 }
 
 .wim-sweet__lede {
-  margin: 0 0 2rem;
+  margin: 0 auto 2rem;
+  max-width: 40rem;
   font-size: 1.05rem;
   line-height: 1.65;
   color: #504533;
@@ -3790,6 +3831,7 @@ h3,
   display: grid;
   grid-template-columns: 1fr;
   gap: 1.5rem;
+  justify-items: center;
 }
 
 @media (min-width: 768px) {
@@ -3800,10 +3842,17 @@ h3,
 }
 
 .wim-sweet__tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-self: center;
+  width: min(100%, 22rem);
   padding: 1.5rem;
   border-radius: 1rem;
   border: 1px solid rgb(213 196 172 / 12%);
   transition: border-color 0.2s ease;
+  text-align: center;
+  box-sizing: border-box;
 }
 
 .wim-sweet__tile:hover {
@@ -3816,6 +3865,7 @@ h3,
 
 .wim-sweet__tile-icon {
   display: block;
+  flex-shrink: 0;
   margin-bottom: 0.75rem;
 }
 
@@ -4285,17 +4335,6 @@ h3,
   background: #f3f4f6;
   color: var(--sd-on-surface-variant);
   transition: background 0.15s ease, border-color 0.15s ease;
-}
-
-.zw-delivery-mode--active {
-  background: var(--zw-primary);
-  color: #6b4b00;
-  border-color: var(--zw-primary-dark);
-}
-
-.zw-delivery-mode--ghost {
-  background: #f3f4f6;
-  color: var(--sd-on-surface-variant);
 }
 
 .zw-delivery-toggle {

@@ -16,29 +16,7 @@ type Props = {
   showSuggestDropdown: boolean
   showSuggestEmpty: boolean
   onPickSuggestion: (s: AddressSuggestion) => void
-}
-
-function IconBell() {
-  return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden>
-      <path
-        d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"
-        stroke="currentColor"
-        strokeWidth="1.75"
-        strokeLinecap="round"
-      />
-      <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
-    </svg>
-  )
-}
-
-function IconUser() {
-  return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden>
-      <circle cx="12" cy="8" r="4" stroke="currentColor" strokeWidth="1.75" />
-      <path d="M6 20c0-4 3-6 6-6s6 2 6 6" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
-    </svg>
-  )
+  onBrandClick: () => void
 }
 
 function IconCheck() {
@@ -95,27 +73,19 @@ export function AddressWelcome({
   showSuggestDropdown,
   showSuggestEmpty,
   onPickSuggestion,
+  onBrandClick,
 }: Props) {
   return (
     <div className="ss-landing">
-      <header className="ss-header">
-        <div className="ss-header__logo">SolarShift</div>
-        <nav className="ss-header__nav" aria-label="Site">
-          <a className="ss-header__link" href="#ss-features">
-            Dashboard
-          </a>
-          <a className="ss-header__link" href="#ss-why">
-            Why It Matters
-          </a>
-        </nav>
-        <div className="ss-header__actions">
-          <button type="button" className="ss-header__icon-btn" aria-label="Notifications">
-            <IconBell />
-          </button>
-          <button type="button" className="ss-header__icon-btn" aria-label="Account">
-            <IconUser />
-          </button>
-        </div>
+      <header className="ss-header ss-header--minimal">
+        <button
+          type="button"
+          className="ss-header__logo ss-header__logo--btn"
+          onClick={onBrandClick}
+          aria-label="Jump to address search"
+        >
+          SolarShift
+        </button>
       </header>
 
       <section className="ss-hero">

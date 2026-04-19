@@ -245,6 +245,13 @@ export default function App() {
     }
   }, [selectedPlace])
 
+  const scrollAddressLandingToInput = useCallback(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+    window.setTimeout(() => {
+      document.getElementById('ss-address')?.focus({ preventScroll: false })
+    }, 350)
+  }, [])
+
   const refreshReport = useCallback(async () => {
     const latitude = Number(lat)
     const longitude = Number(lon)
@@ -259,6 +266,17 @@ export default function App() {
     setWhyMatters(false)
     setTab(t)
   }, [])
+
+  const scrollAppToTop = useCallback(() => {
+    window.scrollTo(0, 0)
+    document.documentElement.scrollTop = 0
+    document.body.scrollTop = 0
+    document.querySelector<HTMLElement>('.sd-main-scroll')?.scrollTo(0, 0)
+  }, [])
+
+  useEffect(() => {
+    scrollAppToTop()
+  }, [phase, tab, whyMatters, scrollAppToTop])
 
   const trimmedQuery = placeQuery.trim()
   const showSuggestEmpty =
@@ -291,12 +309,13 @@ export default function App() {
         showSuggestDropdown={showSuggestDropdown}
         showSuggestEmpty={showSuggestEmpty}
         onPickSuggestion={(s) => void completeWithSuggestion(s)}
+        onBrandClick={scrollAddressLandingToInput}
       />
     )
   }
 
   const main = whyMatters ? (
-    <WhyItMattersPage onViewDashboard={() => goTab('flow')} onGetSmartAlerts={() => goTab('sms')} />
+    <WhyItMattersPage onViewDashboard={() => goTab('flow')} onGetSmartAlerts={() => goTab('notifications')} />
   ) : loading && estimates.length === 0 ? (
     <p className="zw-muted-small" role="status">
       Loading forecast…
@@ -340,7 +359,7 @@ export default function App() {
         onSms={() => goTab('notifications')}
         whyMatters={whyMatters}
         onOpenWhyMatters={() => setWhyMatters(true)}
-        onCloseWhyMatters={() => setWhyMatters(false)}
+        onBrandClick={goBackToAddress}
       >
         {main}
       </DashboardShell>

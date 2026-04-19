@@ -72,19 +72,12 @@ function IconPencil() {
   )
 }
 
-function IconCheck() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden>
-      <path d="M20 6 9 17l-5-5" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  )
-}
-
 export function NotificationsTab() {
   const [sendTime, setSendTime] = useState('07:30 AM')
   const [editingTime, setEditingTime] = useState(false)
   const [timeInput, setTimeInput] = useState('07:30')
-  const [mode, setMode] = useState<'digest' | 'smart'>('digest')
+  const [dailyDigestOn, setDailyDigestOn] = useState(true)
+  const [smartAlertsOn, setSmartAlertsOn] = useState(false)
 
   function commitTime() {
     if (timeInput) {
@@ -207,19 +200,27 @@ export function NotificationsTab() {
             <div className="zw-delivery-modes">
               <button
                 type="button"
-                className={`zw-delivery-mode${mode === 'digest' ? ' zw-delivery-mode--active' : ''}`}
-                onClick={() => setMode('digest')}
+                className="zw-delivery-mode"
+                onClick={() => setDailyDigestOn((v) => !v)}
+                aria-pressed={dailyDigestOn}
               >
                 Daily Digest
-                {mode === 'digest' && <IconCheck />}
+                <span
+                  className={`zw-delivery-toggle${dailyDigestOn ? ' zw-delivery-toggle--on' : ''}`}
+                  aria-hidden
+                />
               </button>
               <button
                 type="button"
-                className={`zw-delivery-mode zw-delivery-mode--ghost${mode === 'smart' ? ' zw-delivery-mode--ghost-active' : ''}`}
-                onClick={() => setMode('smart')}
+                className="zw-delivery-mode"
+                onClick={() => setSmartAlertsOn((v) => !v)}
+                aria-pressed={smartAlertsOn}
               >
-                Smart Alerts Only
-                <span className={`zw-delivery-toggle${mode === 'smart' ? ' zw-delivery-toggle--on' : ''}`} aria-hidden />
+                Smart Alerts
+                <span
+                  className={`zw-delivery-toggle${smartAlertsOn ? ' zw-delivery-toggle--on' : ''}`}
+                  aria-hidden
+                />
               </button>
             </div>
 
