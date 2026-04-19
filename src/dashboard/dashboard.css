@@ -1,4 +1,4 @@
-/* SolarShift: design system (primary #FDB813, secondary #87CEEB, tertiary #2C3E50, neutral #F9F9F9; Manrope + Inter) */
+/* WattTime: design system (primary #FDB813, secondary #87CEEB, tertiary #2C3E50, neutral #F9F9F9; Manrope + Inter) */
 :root {
   --zw-primary: #fdb813;
   --zw-primary-dark: #e0a410;
@@ -29,8 +29,8 @@
   --zw-radius: 20px;
   --zw-radius-sm: 14px;
   --nav-h: 72px;
-  --zw-font-headline: 'Manrope', system-ui, sans-serif;
-  --zw-font-body: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --zw-font-headline: "Manrope", system-ui, sans-serif;
+  --zw-font-body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
 
   font-family: var(--zw-font-body);
   color: var(--zw-text);
@@ -54,7 +54,7 @@ h3,
   font-family: var(--zw-font-headline);
 }
 
-/* SolarShift marketing landing (first-run) */
+/* WattTime marketing landing (first-run) */
 .ss-landing {
   min-height: 100vh;
   display: flex;
@@ -549,9 +549,9 @@ h3,
 .ss-wide-card__visual {
   position: relative;
   width: 100%;
-  aspect-ratio: 16 / 9;   /* or try 3/2, 4/3 — whatever fits your card */
+  aspect-ratio: 16 / 9; /* or try 3/2, 4/3 — whatever fits your card */
   overflow: hidden;
-  border-radius: 8px;      /* optional */
+  border-radius: 8px; /* optional */
 }
 
 .ss-wide-card__img {
@@ -559,8 +559,8 @@ h3,
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;        /* fills frame, crops edges */
-  object-position: center;  /* focal point — adjust if needed */
+  object-fit: cover; /* fills frame, crops edges */
+  object-position: center; /* focal point — adjust if needed */
   filter: grayscale(1) contrast(1.05);
 }
 
@@ -822,7 +822,12 @@ h3,
 }
 
 .zw-card-solar {
-  background: linear-gradient(135deg, #fff4d6 0%, var(--zw-primary) 55%, #ffc94d 100%);
+  background: linear-gradient(
+    135deg,
+    #fff4d6 0%,
+    var(--zw-primary) 55%,
+    #ffc94d 100%
+  );
   border-radius: var(--zw-radius);
   padding: 22px 20px 24px;
   position: relative;
@@ -842,11 +847,16 @@ h3,
   flex-direction: column;
   justify-content: flex-start;
   min-height: 100%;
-  background: linear-gradient(145deg, #ffe9a8 0%, var(--zw-primary) 52%, #f5a623 100%);
+  background: linear-gradient(
+    145deg,
+    #ffe9a8 0%,
+    var(--zw-primary) 52%,
+    #f5a623 100%
+  );
 }
 
 .zw-card-solar::after {
-  content: '';
+  content: "";
   position: absolute;
   right: -28px;
   top: 50%;
@@ -1020,7 +1030,9 @@ h3,
   border-radius: 18px;
   padding: 12px 14px 12px 12px;
   margin-bottom: 20px;
-  box-shadow: 0 1px 0 rgb(255 255 255 / 70%) inset, 0 1px 3px rgb(42 36 28 / 5%);
+  box-shadow:
+    0 1px 0 rgb(255 255 255 / 70%) inset,
+    0 1px 3px rgb(42 36 28 / 5%);
 }
 
 .zw-grid-bar-plug {
@@ -1334,7 +1346,9 @@ h3,
   padding: 16px 14px 16px 16px;
   margin-top: 6px;
   margin-bottom: 8px;
-  box-shadow: 0 2px 12px rgb(61 154 106 / 10%), 0 1px 0 rgb(255 255 255 / 65%) inset;
+  box-shadow:
+    0 2px 12px rgb(61 154 106 / 10%),
+    0 1px 0 rgb(255 255 255 / 65%) inset;
 }
 
 .zw-impact-icon {
@@ -1346,7 +1360,9 @@ h3,
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  box-shadow: 0 4px 10px rgb(0 0 0 / 10%), inset 0 1px 0 rgb(255 255 255 / 35%);
+  box-shadow:
+    0 4px 10px rgb(0 0 0 / 10%),
+    inset 0 1px 0 rgb(255 255 255 / 35%);
   color: #6b4b00;
 }
 
@@ -1454,7 +1470,9 @@ h3,
   font-weight: 600;
   font-family: var(--zw-font-body);
   color: var(--zw-muted);
-  transition: background 0.15s ease, color 0.15s ease;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
 }
 
 .zw-nav-item--active {
@@ -1583,7 +1601,7 @@ h3,
 }
 
 .zw-hero-em {
-  font-family: Georgia, 'Times New Roman', serif;
+  font-family: Georgia, "Times New Roman", serif;
   color: var(--zw-orange-dark);
 }
 
@@ -1882,7 +1900,7 @@ h3,
 }
 
 .zw-switch::after {
-  content: '';
+  content: "";
   position: absolute;
   width: 22px;
   height: 22px;
@@ -1915,14 +1933,19 @@ h3,
 }
 
 .zw-sms-photo::after {
-  content: '';
+  content: "";
   position: absolute;
   left: 0;
   right: 0;
   bottom: 0;
   height: 42%;
   pointer-events: none;
-  background: linear-gradient(to bottom, rgb(249 249 249 / 0%) 0%, rgb(249 249 249 / 55%) 45%, var(--zw-page) 100%);
+  background: linear-gradient(
+    to bottom,
+    rgb(249 249 249 / 0%) 0%,
+    rgb(249 249 249 / 55%) 45%,
+    var(--zw-page) 100%
+  );
 }
 
 .zw-muted-small {
@@ -2087,7 +2110,7 @@ h3,
 }
 
 .chart-bar-slot::after {
-  content: '';
+  content: "";
   position: absolute;
   left: 0;
   right: 0;
@@ -2113,7 +2136,7 @@ h3,
   line-height: 1;
 }
 
-/* SolarShift dashboard shell (post-address) */
+/* WattTime dashboard shell (post-address) */
 .sd-app {
   --sd-amber: #d97706;
   --sd-amber-soft: #fffbeb;
@@ -2219,7 +2242,9 @@ h3,
   text-decoration-thickness: 2px;
   text-underline-offset: 0.4rem;
   padding-bottom: 0.25rem;
-  transition: color 0.15s ease, text-decoration-color 0.15s ease;
+  transition:
+    color 0.15s ease,
+    text-decoration-color 0.15s ease;
 }
 
 .sd-topnav__link:hover {
@@ -2325,7 +2350,9 @@ h3,
   text-align: left;
   color: #71717a;
   border-radius: 0.75rem;
-  transition: background 0.15s ease, color 0.15s ease;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
 }
 
 .sd-nav-item svg {
@@ -2442,7 +2469,9 @@ h3,
   cursor: pointer;
   box-shadow: 0 6px 22px rgb(253 184 19 / 45%);
   z-index: 55;
-  transition: filter 0.15s ease, transform 0.1s ease;
+  transition:
+    filter 0.15s ease,
+    transform 0.1s ease;
 }
 
 .sd-fab:hover {
@@ -2677,7 +2706,9 @@ h3,
   font-size: 1rem;
   font-weight: 800;
   cursor: pointer;
-  transition: transform 0.15s ease, filter 0.15s ease;
+  transition:
+    transform 0.15s ease,
+    filter 0.15s ease;
 }
 
 .sd-btn-pill:hover {
@@ -2879,7 +2910,9 @@ h3,
   min-height: 8%;
   border-radius: 0.5rem 0.5rem 0 0;
   background: rgb(255 187 30 / 35%);
-  transition: background 0.15s ease, filter 0.15s ease;
+  transition:
+    background 0.15s ease,
+    filter 0.15s ease;
 }
 
 .sd-chart__bar:hover {
@@ -3045,7 +3078,11 @@ h3,
   margin: 0 auto;
   aspect-ratio: 1;
   border-radius: 999px;
-  background: linear-gradient(145deg, var(--sd-secondary), var(--sd-secondary-container));
+  background: linear-gradient(
+    145deg,
+    var(--sd-secondary),
+    var(--sd-secondary-container)
+  );
   display: flex;
   align-items: center;
   justify-content: center;
@@ -3101,7 +3138,11 @@ h3,
 }
 
 .sd-main--why {
-  background: radial-gradient(circle at 100% 0, rgb(253 184 19 / 8%) 0%, transparent 70%);
+  background: radial-gradient(
+    circle at 100% 0,
+    rgb(253 184 19 / 8%) 0%,
+    transparent 70%
+  );
 }
 
 /* Why It Matters (editorial page) */
@@ -3282,7 +3323,11 @@ h3,
 .wim-duck__chart-glow {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to bottom right, rgb(255 222 167 / 35%), transparent 55%);
+  background: linear-gradient(
+    to bottom right,
+    rgb(255 222 167 / 35%),
+    transparent 55%
+  );
   opacity: 0.5;
   pointer-events: none;
 }
@@ -3352,7 +3397,9 @@ h3,
   flex: 1;
   border-radius: 0.5rem 0.5rem 0 0;
   min-height: 2rem;
-  transition: height 0.35s ease, filter 0.2s ease;
+  transition:
+    height 0.35s ease,
+    filter 0.2s ease;
 }
 
 .wim-duck__chart-card:hover .wim-duck__bar {
@@ -3696,7 +3743,11 @@ h3,
 .wim-peaker__img-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgb(15 23 42 / 28%) 0%, rgb(15 23 42 / 62%) 100%);
+  background: linear-gradient(
+    180deg,
+    rgb(15 23 42 / 28%) 0%,
+    rgb(15 23 42 / 62%) 100%
+  );
   pointer-events: none;
 }
 
@@ -3878,7 +3929,9 @@ h3,
   font-weight: 800;
   cursor: pointer;
   border: none;
-  transition: transform 0.15s ease, filter 0.15s ease;
+  transition:
+    transform 0.15s ease,
+    filter 0.15s ease;
 }
 
 .wim-btn:hover {
@@ -4247,7 +4300,9 @@ h3,
   cursor: pointer;
   background: #f3f4f6;
   color: var(--sd-on-surface-variant);
-  transition: background 0.15s ease, border-color 0.15s ease;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease;
 }
 
 .zw-delivery-mode--ghost {
@@ -4273,7 +4328,7 @@ h3,
 }
 
 .zw-delivery-toggle::after {
-  content: '';
+  content: "";
   position: absolute;
   width: 14px;
   height: 14px;
@@ -4303,7 +4358,9 @@ h3,
   font-size: 0.95rem;
   font-weight: 700;
   cursor: pointer;
-  transition: filter 0.15s ease, transform 0.1s ease;
+  transition:
+    filter 0.15s ease,
+    transform 0.1s ease;
 }
 
 .zw-delivery-update-btn:hover {

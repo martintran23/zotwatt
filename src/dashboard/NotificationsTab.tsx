@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState } from "react";
 
 function IconSolarLogo() {
   return (
@@ -12,16 +12,22 @@ function IconSolarLogo() {
         strokeLinecap="round"
       />
     </svg>
-  )
+  );
 }
 
 function IconClock() {
   return (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
       <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.75" />
-      <path d="M12 7v5l3 3" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
+      <path
+        d="M12 7v5l3 3"
+        stroke="currentColor"
+        strokeWidth="1.75"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
-  )
+  );
 }
 
 function IconLeaf() {
@@ -34,7 +40,7 @@ function IconLeaf() {
         strokeLinejoin="round"
       />
     </svg>
-  )
+  );
 }
 
 function IconSunEmail() {
@@ -48,7 +54,7 @@ function IconSunEmail() {
         strokeLinecap="round"
       />
     </svg>
-  )
+  );
 }
 
 function IconPencil() {
@@ -69,25 +75,25 @@ function IconPencil() {
         strokeLinejoin="round"
       />
     </svg>
-  )
+  );
 }
 
 export function NotificationsTab() {
-  const [sendTime, setSendTime] = useState('07:30 AM')
-  const [editingTime, setEditingTime] = useState(false)
-  const [timeInput, setTimeInput] = useState('07:30')
-  const [dailyDigestEnabled, setDailyDigestEnabled] = useState(true)
-  const [smartAlertsEnabled, setSmartAlertsEnabled] = useState(false)
+  const [sendTime, setSendTime] = useState("07:30 AM");
+  const [editingTime, setEditingTime] = useState(false);
+  const [timeInput, setTimeInput] = useState("07:30");
+  const [dailyDigestEnabled, setDailyDigestEnabled] = useState(true);
+  const [smartAlertsEnabled, setSmartAlertsEnabled] = useState(false);
 
   function commitTime() {
     if (timeInput) {
-      const [h, m] = timeInput.split(':')
-      const hour = parseInt(h, 10)
-      const period = hour >= 12 ? 'PM' : 'AM'
-      const h12 = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour
-      setSendTime(`${String(h12).padStart(2, '0')}:${m} ${period}`)
+      const [h, m] = timeInput.split(":");
+      const hour = parseInt(h, 10);
+      const period = hour >= 12 ? "PM" : "AM";
+      const h12 = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
+      setSendTime(`${String(h12).padStart(2, "0")}:${m} ${period}`);
     }
-    setEditingTime(false)
+    setEditingTime(false);
   }
 
   return (
@@ -95,7 +101,8 @@ export function NotificationsTab() {
       <header className="zw-notif-header">
         <h1 className="zw-notif-title">Email Notification Service</h1>
         <p className="zw-notif-subtitle">
-          Get daily solar updates with personalized recommendations on when to run appliances for the most efficient, cost-effective times.
+          Get daily solar updates with personalized recommendations on when to
+          run appliances for the most efficient, cost-effective times.
         </p>
       </header>
 
@@ -103,7 +110,7 @@ export function NotificationsTab() {
         <article className="zw-email-card">
           <div className="zw-email-brand">
             <IconSolarLogo />
-            <span className="zw-email-brand-name">SolarShift</span>
+            <span className="zw-email-brand-name">WattTime</span>
           </div>
 
           <h2 className="zw-email-heading">Your Daily Solar Update</h2>
@@ -112,10 +119,12 @@ export function NotificationsTab() {
           <div className="zw-email-rec">
             <div className="zw-email-rec__content">
               <span className="zw-email-rec__tag">Primary Recommendation</span>
-              <h3 className="zw-email-rec__title">Run your laundry around noon today.</h3>
+              <h3 className="zw-email-rec__title">
+                Run your laundry around noon today.
+              </h3>
               <p className="zw-email-rec__body">
-                Your solar panels will be at peak production, making this the most cost-effective and green time for
-                heavy appliances.
+                Your solar panels will be at peak production, making this the
+                most cost-effective and green time for heavy appliances.
               </p>
             </div>
             <div className="zw-email-rec__img" aria-hidden />
@@ -128,14 +137,18 @@ export function NotificationsTab() {
               </div>
               <div className="zw-email-stat__label">Optimal Window</div>
               <div className="zw-email-stat__value">11:30 AM – 1:45 PM</div>
-              <div className="zw-email-stat__note">Efficiency expected at 94%</div>
+              <div className="zw-email-stat__note">
+                Efficiency expected at 94%
+              </div>
             </div>
             <div className="zw-email-stat zw-email-stat--blue">
               <div className="zw-email-stat__icon">
                 <IconLeaf />
               </div>
               <div className="zw-email-stat__label">Estimated Savings</div>
-              <div className="zw-email-stat__value zw-email-stat__value--lg">$4.12 Today</div>
+              <div className="zw-email-stat__value zw-email-stat__value--lg">
+                $4.12 Today
+              </div>
               <div className="zw-email-stat__note">Carbon avoided: 2.4kg</div>
             </div>
           </div>
@@ -143,11 +156,12 @@ export function NotificationsTab() {
           <div className="zw-email-outlook">
             <div>
               <p className="zw-email-outlook__title">Tomorrow&apos;s Outlook</p>
-              <p className="zw-email-outlook__body">Sunny skies tomorrow: expect even higher production!</p>
+              <p className="zw-email-outlook__body">
+                Sunny skies tomorrow: expect even higher production!
+              </p>
             </div>
             <IconSunEmail />
           </div>
-
         </article>
 
         <aside className="zw-delivery-panel">
@@ -184,25 +198,25 @@ export function NotificationsTab() {
             <div className="zw-delivery-modes">
               <button
                 type="button"
-                className={`zw-delivery-mode zw-delivery-mode--ghost${dailyDigestEnabled ? ' zw-delivery-mode--ghost-active' : ''}`}
+                className={`zw-delivery-mode zw-delivery-mode--ghost${dailyDigestEnabled ? " zw-delivery-mode--ghost-active" : ""}`}
                 onClick={() => setDailyDigestEnabled((v) => !v)}
                 aria-pressed={dailyDigestEnabled}
               >
                 Daily Digest
                 <span
-                  className={`zw-delivery-toggle${dailyDigestEnabled ? ' zw-delivery-toggle--on' : ''}`}
+                  className={`zw-delivery-toggle${dailyDigestEnabled ? " zw-delivery-toggle--on" : ""}`}
                   aria-hidden
                 />
               </button>
               <button
                 type="button"
-                className={`zw-delivery-mode zw-delivery-mode--ghost${smartAlertsEnabled ? ' zw-delivery-mode--ghost-active' : ''}`}
+                className={`zw-delivery-mode zw-delivery-mode--ghost${smartAlertsEnabled ? " zw-delivery-mode--ghost-active" : ""}`}
                 onClick={() => setSmartAlertsEnabled((v) => !v)}
                 aria-pressed={smartAlertsEnabled}
               >
                 Peak Hour Alerts
                 <span
-                  className={`zw-delivery-toggle${smartAlertsEnabled ? ' zw-delivery-toggle--on' : ''}`}
+                  className={`zw-delivery-toggle${smartAlertsEnabled ? " zw-delivery-toggle--on" : ""}`}
                   aria-hidden
                 />
               </button>
@@ -222,5 +236,5 @@ export function NotificationsTab() {
         </aside>
       </div>
     </div>
-  )
+  );
 }
