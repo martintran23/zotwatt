@@ -6,6 +6,7 @@ import {
   resolveAddressSuggestion,
   type AddressSuggestion,
 } from './lib/addressAutocomplete'
+import { isPostalOnlyQuery } from './lib/placeQueryPolicy'
 import { adviceForDay, APPLIANCES } from './lib/appliances'
 import { fetchSolarForecast } from './lib/openMeteo'
 import {
@@ -75,6 +76,12 @@ export default function App() {
     let cancelled = false
     const timer = window.setTimeout(async () => {
       const fid = ++suggestFetchId.current
+      if (isPostalOnlyQuery(q)) {
+        setSearchHits([])
+        setSuggestLastResolvedQuery(q)
+        setSuggestBusy(false)
+        return
+      }
       setSuggestBusy(true)
       try {
         const hits = await fetchAddressSuggestions(q)
@@ -156,7 +163,12 @@ export default function App() {
     setGeoStatus(null)
     const q = placeQuery.trim()
     if (!q) {
-      setError('Enter an address or city, or use your location.')
+      setError('Enter a city and state, or use your location.')
+      return
+    }
+    if (isPostalOnlyQuery(q)) {
+      setSearchHits([])
+      setError('Use a city and state, not a postal or ZIP code.')
       return
     }
     setError(null)
@@ -257,7 +269,7 @@ export default function App() {
             onSubmit={() => void submitAddressSearch()}
             onGeolocation={useGeolocation}
             disabled={loading}
-            placeholder="City, neighborhood, or address"
+            placeholder="City and state (e.g. Irvine, CA)"
           />
 
           {showSuggestDropdown && (
@@ -272,7 +284,11 @@ export default function App() {
                 </li>
               )}
               {showSuggestEmpty && (
-                <li className="search-results__hint">No matching places. Try another spelling.</li>
+                <li className="search-results__hint">
+                  {isPostalOnlyQuery(trimmedQuery)
+                    ? 'ZIP and postal codes are not accepted. Enter a city and state.'
+                    : 'No matching places. Try another spelling.'}
+                </li>
               )}
               {searchHits.map((s) => (
                 <li key={s.source === 'aws' ? s.placeId : `om-${s.id}`}>
@@ -310,12 +326,9 @@ export default function App() {
         )}
 
         <p className="welcome__hint">
-          Suggestions appear as you type (2+ characters)
-          {isAwsAutocompleteEnabled()
-            ? ' using Amazon Location autocomplete'
-            : ' using Open‑Meteo place search'}
-          . Press <strong>Enter</strong> or the arrow to search the current text. Forecast uses Open‑Meteo radiation
-          and clouds; results are estimates, not meter‑grade.
+          <strong>City and state</strong> or city name—not ZIP or postal codes. Suggestions from 2+ characters
+          {isAwsAutocompleteEnabled() ? ' (Amazon Location)' : ' (Open‑Meteo)'}
+          . Press <strong>Enter</strong> to search. Solar forecast from Open‑Meteo—estimates only, not meter-grade.
         </p>
       </div>
     )

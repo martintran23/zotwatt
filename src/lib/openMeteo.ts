@@ -5,6 +5,10 @@ export type GeocodeHit = {
   longitude: number
   country_code?: string
   admin1?: string
+  /** GeoNames-style feature (e.g. PPL, PST); used to drop postal-only rows. */
+  feature_code?: string
+  postcodes?: string[]
+  population?: number
 }
 
 export async function searchPlaces(query: string): Promise<GeocodeHit[]> {
