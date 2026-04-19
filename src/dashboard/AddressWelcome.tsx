@@ -233,7 +233,7 @@ export function AddressWelcome({
             </div>
             <h2>AI-Powered Insights</h2>
             <p>
-              We analyze millions of data points to predict the exact moment your home can be most efficient—so you can
+              We analyze millions of data points to predict the exact moment your home can be most efficient, so you can
               align flexible loads with peak solar.
             </p>
           </div>

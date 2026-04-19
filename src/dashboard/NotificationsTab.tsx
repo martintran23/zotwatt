@@ -151,7 +151,7 @@ export function NotificationsTab() {
           <div className="zw-email-outlook">
             <div>
               <p className="zw-email-outlook__title">Tomorrow&apos;s Outlook</p>
-              <p className="zw-email-outlook__body">Sunny skies tomorrow—expect even higher production!</p>
+              <p className="zw-email-outlook__body">Sunny skies tomorrow: expect even higher production!</p>
             </div>
             <IconSunEmail />
           </div>

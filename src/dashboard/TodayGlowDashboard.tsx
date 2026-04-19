@@ -217,7 +217,7 @@ function atmosphereCopy(avgCloud: number): string {
 
 export function TodayGlowDashboard({ hours, timeZone, selectedPlace, kWp, onOpenSchedule }: Props) {
   const placeLabel = selectedPlace.trim() || 'Your location'
-  const dateLine = hours[0] ? formatLongDate(hours[0].timeIso, timeZone) : '—'
+  const dateLine = hours[0] ? formatLongDate(hours[0].timeIso, timeZone) : '-'
   const windowLabel = computeSolarWindowLabel(hours, timeZone)
 
   const maxKw = hours.length ? Math.max(...hours.map((h) => h.estimatedKw), 0.01) : 0.01
@@ -232,8 +232,8 @@ export function TodayGlowDashboard({ hours, timeZone, selectedPlace, kWp, onOpen
   const mid = Math.floor(hours.length / 2)
   const humSample = hours.find((h, i) => i >= mid && h.humidityPct != null)?.humidityPct
   const uvSample = hours.find((h, i) => i >= mid && h.uvIndex != null)?.uvIndex
-  const humidityDisplay = humSample != null ? `${Math.round(humSample)}%` : '—'
-  const uvDisplay = uvSample != null ? `${Math.round(uvSample * 10) / 10}/10` : '—'
+  const humidityDisplay = humSample != null ? `${Math.round(humSample)}%` : '-'
+  const uvDisplay = uvSample != null ? `${Math.round(uvSample * 10) / 10}/10` : '-'
 
   const { bars, peakIdx } = pickChartBars(hours, 9)
   const peakKw = Number(kWp) > 0 ? Number(kWp) : 8
@@ -254,7 +254,7 @@ export function TodayGlowDashboard({ hours, timeZone, selectedPlace, kWp, onOpen
           : [0, Math.floor(nB * 0.25), Math.floor(nB * 0.5), Math.floor(nB * 0.75), nB - 1]
   const tickLabels = tickIdx.map((idx) => {
     const iso = bars[idx]?.timeIso
-    if (!iso) return { idx, label: '—' as string }
+    if (!iso) return { idx, label: '-' as string }
     const label = new Intl.DateTimeFormat(undefined, {
       timeZone,
       hour: '2-digit',
@@ -296,7 +296,7 @@ export function TodayGlowDashboard({ hours, timeZone, selectedPlace, kWp, onOpen
             <h2 className="sd-card--solar-window__headline">
               Best time to run appliances today:
               <br />
-              <span className="sd-card--solar-window__accent">{windowLabel ?? '—'}</span>
+              <span className="sd-card--solar-window__accent">{windowLabel ?? '-'}</span>
             </h2>
             <button type="button" className="sd-btn-pill" onClick={onOpenSchedule}>
               Schedule Appliances

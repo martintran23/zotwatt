@@ -29,14 +29,14 @@ export function ScheduleTab({
         {onReturnToAddress ? (
           <>
             {' '}
-            —{' '}
+            {' · '}
             <button type="button" className="zw-inline-link" onClick={onReturnToAddress}>
               Open full address screen
             </button>{' '}
             or use + to pick a place.
           </>
         ) : (
-          <> — use + to change.</>
+          <> Use + to change.</>
         )}
       </p>
 

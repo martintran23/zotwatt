@@ -129,7 +129,7 @@ function IconShieldPlus({ className }: { className?: string }) {
 }
 
 /**
- * Classic lightning zigzag (6 vertices) — reads unambiguously as a bolt.
+ * Classic lightning zigzag (6 vertices); reads unambiguously as a bolt.
  * Stroked to pair visually with IconShieldPlus; slightly heavier stroke for optical balance on diagonals.
  */
 function IconThunderbolt({ className }: { className?: string }) {
@@ -165,7 +165,7 @@ export function WhyItMattersPage({ onViewDashboard, onGetSmartAlerts }: Props) {
               Energy is a <span className="wim-hero__accent">natural rhythm</span>.
             </h1>
             <p className="wim-hero__lede">
-              Understanding how your home breathes with the sun isn&apos;t just about saving money—it&apos;s about
+              Understanding how your home breathes with the sun isn&apos;t just about saving money. It&apos;s about
               harmonizing your lifestyle with the planet&apos;s ecosystem.
             </p>
           </div>
@@ -309,7 +309,7 @@ export function WhyItMattersPage({ onViewDashboard, onGetSmartAlerts }: Props) {
                 &quot;My home reduced hundreds of kilograms of carbon emissions this year just by shifting my dishwasher
                 to run when the sun is strongest.&quot;
               </p>
-              <footer>— Sarah, SolarShift user</footer>
+              <footer>Sarah, SolarShift user</footer>
             </blockquote>
           </div>
         </div>

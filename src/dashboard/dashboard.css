@@ -1,4 +1,4 @@
-/* SolarShift — design system (primary #FDB813, secondary #87CEEB, tertiary #2C3E50, neutral #F9F9F9; Manrope + Inter) */
+/* SolarShift: design system (primary #FDB813, secondary #87CEEB, tertiary #2C3E50, neutral #F9F9F9; Manrope + Inter) */
 :root {
   --zw-primary: #fdb813;
   --zw-primary-dark: #e0a410;
@@ -153,7 +153,7 @@ h3,
   width: min(64vw, 460px);
   height: min(64vw, 460px);
   border-radius: 50%;
-  /* Soft gold halo — strong near sun, fades out quickly */
+  /* Soft gold halo: strong near sun, fades out quickly */
   background: radial-gradient(
     circle,
     rgb(253 184 19 / 0.2) 0%,
@@ -798,7 +798,7 @@ h3,
   letter-spacing: -0.03em;
 }
 
-/* Flow cards + grid bar — flex gap avoids margin collapse; no z-index so DOM order paints bar above any bleed */
+/* Flow cards + grid bar: flex gap avoids margin collapse; no z-index so DOM order paints bar above any bleed */
 .zw-flow-stack {
   display: flex;
   flex-direction: column;
@@ -815,7 +815,7 @@ h3,
   margin-bottom: 0;
 }
 
-/* Flow cards — one row: solar | home | powerwall */
+/* Flow cards: one row: solar | home | powerwall */
 .zw-flow-row {
   display: grid;
   grid-template-columns: minmax(0, 1.68fr) minmax(0, 1fr) minmax(0, 1fr);
@@ -1276,7 +1276,7 @@ h3,
   margin-bottom: 4px;
 }
 
-/* Your Impact — bottom summary (Flow) */
+/* Your Impact: bottom summary (Flow) */
 .zw-impact-banner {
   display: flex;
   flex-direction: row;
@@ -2056,7 +2056,7 @@ h3,
   margin-top: 4px;
 }
 
-/* —— SolarShift dashboard shell (post-address) —— */
+/* SolarShift dashboard shell (post-address) */
 .sd-app {
   --sd-amber: #d97706;
   --sd-amber-soft: #fffbeb;
@@ -2433,7 +2433,7 @@ h3,
   }
 }
 
-/* Today’s Glow — bento */
+/* Today’s Glow: bento */
 .sd-glow {
   position: relative;
   z-index: 1;
@@ -3110,7 +3110,7 @@ h3,
   background: radial-gradient(circle at 100% 0, rgb(253 184 19 / 8%) 0%, transparent 70%);
 }
 
-/* —— Why It Matters (editorial page) —— */
+/* Why It Matters (editorial page) */
 .wim {
   max-width: 72rem;
   margin: 0 auto;
@@ -3934,7 +3934,7 @@ h3,
   opacity: 0.85;
 }
 
-/* ——— Email Notification Preview ——— */
+/* Email Notification Preview */
 .zw-notif-page {
   max-width: 72rem;
   margin: 0 auto;
