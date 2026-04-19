@@ -18,6 +18,21 @@ export function isOptimizeApiEnabled(): boolean {
   return getOptimizeApiUrl() !== null
 }
 
+function getOptimizeStatusApiUrl(): string | null {
+  const v = import.meta.env.VITE_OPTIMIZE_STATUS_API_URL
+  const t = (typeof v === 'string' ? v : '').trim()
+  return t.length > 0 ? t : null
+}
+
+function getOptimizePollConfig() {
+  const intervalRaw = Number(import.meta.env.VITE_OPTIMIZE_POLL_INTERVAL_MS ?? 1800)
+  const timeoutRaw = Number(import.meta.env.VITE_OPTIMIZE_POLL_TIMEOUT_MS ?? 15000)
+  return {
+    intervalMs: Number.isFinite(intervalRaw) ? Math.max(400, intervalRaw) : 1800,
+    timeoutMs: Number.isFinite(timeoutRaw) ? Math.max(2000, timeoutRaw) : 15000,
+  }
+}
+
 type OptimizeRequestBody = {
   latitude: number
   longitude: number
@@ -50,6 +65,16 @@ function hasHourlyTimeSeries(obj: unknown): boolean {
 /** Step Functions StartSyncExecution style: succeeded but `output` has no hourly arrays (e.g. only recommendations). */
 export class OptimizeNoHourlyPayloadError extends Error {
   override readonly name = 'OptimizeNoHourlyPayloadError'
+}
+
+class OptimizePendingExecutionError extends Error {
+  override readonly name = 'OptimizePendingExecutionError'
+  readonly executionArn: string
+
+  constructor(executionArn: string) {
+    super('Optimize API returned executionArn without hourly data.')
+    this.executionArn = executionArn
+  }
 }
 
 /** Build {@link HourlyForecast} from an object that already looks like Open‑Meteo hourly + timezone. */
@@ -116,9 +141,7 @@ export function parseOptimizeResponseToHourlyForecast(data: unknown): HourlyFore
   }
 
   if (typeof o.executionArn === 'string' && !hasHourlyTimeSeries(root)) {
-    throw new Error(
-      'Optimize API returned executionArn without hourly data. Extend the backend to return forecast JSON or add polling.',
-    )
+    throw new OptimizePendingExecutionError(o.executionArn)
   }
 
   return parseHourlyForecastShape(root)
@@ -155,7 +178,68 @@ export async function fetchOptimizeForecast(url: string, body: OptimizeRequestBo
     throw new Error(`Optimize API failed (${res.status}): ${msg}`)
   }
 
-  return parseOptimizeResponseToHourlyForecast(json)
+  try {
+    return parseOptimizeResponseToHourlyForecast(json)
+  } catch (e) {
+    if (!(e instanceof OptimizePendingExecutionError)) throw e
+    const statusUrl = getOptimizeStatusApiUrl()
+    if (!statusUrl) {
+      throw new Error(
+        'Optimize API returned executionArn without hourly data. Set VITE_OPTIMIZE_STATUS_API_URL to poll status, or return hourly data synchronously.',
+      )
+    }
+    return pollOptimizeUntilReady(statusUrl, e.executionArn, headers)
+  }
+}
+
+async function fetchOptimizeStatus(
+  statusUrl: string,
+  executionArn: string,
+  headers: Record<string, string>,
+): Promise<unknown> {
+  const url = new URL(statusUrl)
+  url.searchParams.set('executionArn', executionArn)
+  const statusHeaders: Record<string, string> = { Accept: headers.Accept }
+  if (headers['x-api-key']) statusHeaders['x-api-key'] = headers['x-api-key']
+
+  const res = await fetch(url.toString(), {
+    method: 'GET',
+    mode: 'cors',
+    headers: statusHeaders,
+  })
+  const text = await res.text()
+  if (!res.ok) {
+    throw new Error(`Optimize status API failed (${res.status}): ${text.slice(0, 200)}`)
+  }
+  if (!text) return null
+  try {
+    return JSON.parse(text) as unknown
+  } catch {
+    throw new Error('Optimize status API returned non‑JSON.')
+  }
+}
+
+async function pollOptimizeUntilReady(
+  statusUrl: string,
+  executionArn: string,
+  headers: Record<string, string>,
+): Promise<HourlyForecast> {
+  const { intervalMs, timeoutMs } = getOptimizePollConfig()
+  const started = Date.now()
+  while (Date.now() - started <= timeoutMs) {
+    const json = await fetchOptimizeStatus(statusUrl, executionArn, headers)
+    try {
+      return parseOptimizeResponseToHourlyForecast(json)
+    } catch (e) {
+      if (e instanceof OptimizePendingExecutionError) {
+        // still running
+      } else if (e instanceof OptimizeNoHourlyPayloadError) {
+        throw e
+      }
+    }
+    await new Promise((resolve) => window.setTimeout(resolve, intervalMs))
+  }
+  throw new Error('Optimize polling timed out before hourly data became available.')
 }
 
 /**

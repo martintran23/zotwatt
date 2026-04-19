@@ -46,7 +46,7 @@ export async function fetchSolarForecast(
     'hourly',
     'shortwave_radiation,cloud_cover,temperature_2m,relative_humidity_2m,uv_index',
   )
-  url.searchParams.set('forecast_days', '3')
+  url.searchParams.set('forecast_days', '7')
   url.searchParams.set('timezone', 'auto')
 
   const res = await fetch(url.toString())
