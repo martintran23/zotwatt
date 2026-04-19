@@ -6,10 +6,7 @@ import {
 } from './awsPlaces'
 import { searchPlaces, type GeocodeHit } from './openMeteo'
 import {
-  extractUsPostalQueryDigits,
-  hitPostcodesIncludeUsZip5,
-  isCanadianPostalWhole,
-  isPopulatedPlaceFeatureCode,
+  isPostalOnlyQuery,
   openMeteoHitExcludesPostalLike,
   suggestionLabelStartsWithPostal,
 } from './placeQueryPolicy'
@@ -34,33 +31,10 @@ function openMeteoHitToSuggestion(h: GeocodeHit): Extract<AddressSuggestion, { s
   }
 }
 
-/** US ZIP / ZIP+4: list populated places whose Open‑Meteo `postcodes` include that ZIP (not the ZIP itself). */
-async function fetchSuggestionsForUsPostal(query: string, zip5: string): Promise<AddressSuggestion[]> {
-  const hits = await searchPlaces(query, { count: 100, countryCode: 'US' })
-  const seen = new Set<number>()
-  const matched: GeocodeHit[] = []
-  for (const h of hits) {
-    if (!isPopulatedPlaceFeatureCode(h.feature_code)) continue
-    if (!hitPostcodesIncludeUsZip5(h.postcodes, zip5)) continue
-    if (seen.has(h.id)) continue
-    seen.add(h.id)
-    matched.push(h)
-  }
-  matched.sort((a, b) => (b.population ?? 0) - (a.population ?? 0))
-  return matched.map(openMeteoHitToSuggestion)
-}
-
 export async function fetchAddressSuggestions(query: string): Promise<AddressSuggestion[]> {
   const q = query.trim()
   if (!q) return []
-
-  const usZip5 = extractUsPostalQueryDigits(q)
-  if (usZip5) {
-    return fetchSuggestionsForUsPostal(q, usZip5)
-  }
-  if (isCanadianPostalWhole(q)) {
-    return []
-  }
+  if (isPostalOnlyQuery(q)) return []
 
   const { enabled, apiKey, region } = getAwsPlacesEnv()
   if (enabled) {

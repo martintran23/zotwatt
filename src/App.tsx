@@ -6,7 +6,7 @@ import {
   resolveAddressSuggestion,
   type AddressSuggestion,
 } from './lib/addressAutocomplete'
-import { extractUsPostalQueryDigits, isCanadianPostalWhole } from './lib/placeQueryPolicy'
+import { isPostalOnlyQuery } from './lib/placeQueryPolicy'
 import { adviceForDay, APPLIANCES } from './lib/appliances'
 import { fetchSolarForecast } from './lib/openMeteo'
 import {
@@ -76,7 +76,7 @@ export default function App() {
     let cancelled = false
     const timer = window.setTimeout(async () => {
       const fid = ++suggestFetchId.current
-      if (isCanadianPostalWhole(q)) {
+      if (isPostalOnlyQuery(q)) {
         setSearchHits([])
         setSuggestLastResolvedQuery(q)
         setSuggestBusy(false)
@@ -163,14 +163,12 @@ export default function App() {
     setGeoStatus(null)
     const q = placeQuery.trim()
     if (!q) {
-      setError('Enter a city, US ZIP (then pick a city), or use your location.')
+      setError('Enter a city and state, or use your location.')
       return
     }
-    if (isCanadianPostalWhole(q)) {
+    if (isPostalOnlyQuery(q)) {
       setSearchHits([])
-      setError(
-        'Canadian postal codes are not expanded here. Enter your city and province, or type a city name to pick from suggestions.',
-      )
+      setError('Use a city and state, not a postal or ZIP code.')
       return
     }
     setError(null)
@@ -178,13 +176,7 @@ export default function App() {
       const suggestions = await fetchAddressSuggestions(q)
       if (!suggestions.length) {
         setSearchHits([])
-        if (extractUsPostalQueryDigits(q)) {
-          setError(
-            'No cities in our place database list that ZIP. Try a nearby city name, or check the ZIP.',
-          )
-        } else {
-          setError('No places matched. Try a nearby city or spelling.')
-        }
+        setError('No places matched. Try a nearby city or spelling.')
         return
       }
       if (suggestions.length === 1) {
@@ -277,7 +269,7 @@ export default function App() {
             onSubmit={() => void submitAddressSearch()}
             onGeolocation={useGeolocation}
             disabled={loading}
-            placeholder="City, state, or US ZIP (then pick a city)"
+            placeholder="City and state (e.g. Irvine, CA)"
           />
 
           {showSuggestDropdown && (
@@ -293,11 +285,9 @@ export default function App() {
               )}
               {showSuggestEmpty && (
                 <li className="search-results__hint">
-                  {isCanadianPostalWhole(trimmedQuery)
-                    ? 'Canadian postal codes are not expanded here — type a city and province.'
-                    : extractUsPostalQueryDigits(trimmedQuery)
-                      ? 'No cities list that ZIP in our database. Try a city name or another ZIP.'
-                      : 'No matching places. Try another spelling.'}
+                  {isPostalOnlyQuery(trimmedQuery)
+                    ? 'ZIP and postal codes are not accepted. Enter a city and state.'
+                    : 'No matching places. Try another spelling.'}
                 </li>
               )}
               {searchHits.map((s) => (
@@ -336,14 +326,9 @@ export default function App() {
         )}
 
         <p className="welcome__hint">
-          Enter a <strong>city and state</strong>, a city name, or a <strong>US ZIP</strong>. For ZIPs we show{' '}
-          <strong>cities that include that ZIP</strong> so you pick one (we do not pin to the ZIP alone). Canadian
-          postal codes: use city and province. Suggestions appear as you type (2+ characters)
-          {isAwsAutocompleteEnabled()
-            ? ' using Amazon Location autocomplete'
-            : ' using Open‑Meteo place search'}
-          . Press <strong>Enter</strong> or the arrow to search. Forecast uses Open‑Meteo radiation and clouds; results
-          are estimates, not meter‑grade.
+          <strong>City and state</strong> or city name—not ZIP or postal codes. Suggestions from 2+ characters
+          {isAwsAutocompleteEnabled() ? ' (Amazon Location)' : ' (Open‑Meteo)'}
+          . Press <strong>Enter</strong> to search. Solar forecast from Open‑Meteo—estimates only, not meter-grade.
         </p>
       </div>
     )
