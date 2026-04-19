@@ -31,12 +31,61 @@ function openMeteoHitToSuggestion(h: GeocodeHit): Extract<AddressSuggestion, { s
   }
 }
 
+/** Prefer places whose Open‑Meteo `postcodes` list includes the typed US ZIP or CA postal code. */
+function rankHitsForPostalQuery(hits: GeocodeHit[], query: string): GeocodeHit[] {
+  const trimmed = query.trim()
+  const usZip = trimmed.match(/^(\d{5})(?:-\d{4})?$/)?.[1]
+  if (usZip) {
+    const matched = hits.filter(
+      (h) =>
+        h.country_code === 'US' &&
+        (h.postcodes ?? []).some((pc) => {
+          const digits = pc.replace(/\D/g, '')
+          return digits.startsWith(usZip) || pc.trim().startsWith(usZip)
+        }),
+    )
+    if (matched.length) {
+      return [...matched].sort((a, b) => (b.population ?? 0) - (a.population ?? 0))
+    }
+  }
+  const caNorm = trimmed.replace(/\s+/g, '').toUpperCase()
+  if (/^[A-Z]\d[A-Z]\d[A-Z]\d$/.test(caNorm)) {
+    const matched = hits.filter((h) =>
+      (h.postcodes ?? []).some((pc) => pc.replace(/\s+/g, '').toUpperCase().startsWith(caNorm)),
+    )
+    if (matched.length) {
+      return [...matched].sort((a, b) => (b.population ?? 0) - (a.population ?? 0))
+    }
+  }
+  return hits
+}
+
+async function suggestionsFromOpenMeteo(query: string, postalOnly: boolean): Promise<AddressSuggestion[]> {
+  const omCount = postalOnly ? 25 : 10
+  let hits = await searchPlaces(query, omCount)
+  hits = hits.filter((h) => !openMeteoHitExcludesPostalLike(h))
+  if (postalOnly) {
+    hits = rankHitsForPostalQuery(hits, query)
+  }
+  return hits
+    .map(openMeteoHitToSuggestion)
+    .filter((s) => !suggestionLabelStartsWithPostal(s.label))
+}
+
 export async function fetchAddressSuggestions(query: string): Promise<AddressSuggestion[]> {
   const q = query.trim()
   if (!q) return []
-  if (isPostalOnlyQuery(q)) return []
 
+  const postalOnly = isPostalOnlyQuery(q)
   const { enabled, apiKey, region } = getAwsPlacesEnv()
+
+  // Full US ZIP / CA postal: use Open‑Meteo only. Amazon Places often returns rows whose primary label is the code
+  // itself (we drop those), and it does not expose postcode→locality the same way—so Westminster, CA for 92683
+  // comes from Open‑Meteo's `postcodes` index, not from filtering AWS alone.
+  if (postalOnly) {
+    return suggestionsFromOpenMeteo(q, true)
+  }
+
   if (enabled) {
     const rows = await awsAutocomplete(apiKey, region, q)
     return rows
@@ -44,11 +93,7 @@ export async function fetchAddressSuggestions(query: string): Promise<AddressSug
       .map((r) => ({ source: 'aws', placeId: r.placeId, label: r.label }))
   }
 
-  const hits = await searchPlaces(q)
-  return hits
-    .filter((h) => !openMeteoHitExcludesPostalLike(h))
-    .map(openMeteoHitToSuggestion)
-    .filter((s) => !suggestionLabelStartsWithPostal(s.label))
+  return suggestionsFromOpenMeteo(q, false)
 }
 
 export async function resolveAddressSuggestion(
