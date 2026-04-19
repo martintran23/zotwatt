@@ -24,6 +24,7 @@ export type HourlyForecast = {
   time: string[]
   shortwaveRadiation: (number | null)[]
   cloudCover: (number | null)[]
+  temperature2m: (number | null)[]
   timezone: string
 }
 
@@ -34,7 +35,7 @@ export async function fetchSolarForecast(
   const url = new URL('https://api.open-meteo.com/v1/forecast')
   url.searchParams.set('latitude', String(latitude))
   url.searchParams.set('longitude', String(longitude))
-  url.searchParams.set('hourly', 'shortwave_radiation,cloud_cover')
+  url.searchParams.set('hourly', 'shortwave_radiation,cloud_cover,temperature_2m')
   url.searchParams.set('forecast_days', '3')
   url.searchParams.set('timezone', 'auto')
 
@@ -47,6 +48,7 @@ export async function fetchSolarForecast(
       time: string[]
       shortwave_radiation?: (number | null)[]
       cloud_cover?: (number | null)[]
+      temperature_2m?: (number | null)[]
     }
   }
 
@@ -59,6 +61,7 @@ export async function fetchSolarForecast(
     time: hourly.time,
     shortwaveRadiation: hourly.shortwave_radiation ?? hourly.time.map(() => null),
     cloudCover: hourly.cloud_cover ?? hourly.time.map(() => null),
+    temperature2m: hourly.temperature_2m ?? hourly.time.map(() => null),
     timezone: data.timezone ?? 'UTC',
   }
 }

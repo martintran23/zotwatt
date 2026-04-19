@@ -2,6 +2,7 @@ export type HourEstimate = {
   timeIso: string
   radiationWm2: number
   cloudPct: number | null
+  tempC: number | null
   estimatedKw: number
 }
 
@@ -10,20 +11,25 @@ export function estimateHourlyPower(
     time: string[]
     shortwaveRadiation: (number | null)[]
     cloudCover: (number | null)[]
+    temperature2m?: (number | null)[]
   },
   kWp: number,
   performanceRatio: number,
 ): HourEstimate[] {
   const out: HourEstimate[] = []
   const n = forecast.time.length
+  const temps = forecast.temperature2m ?? []
   for (let i = 0; i < n; i++) {
     const rad = forecast.shortwaveRadiation[i]
     const ghi = typeof rad === 'number' && Number.isFinite(rad) ? Math.max(0, rad) : 0
     const estimatedKw = kWp * (ghi / 1000) * performanceRatio
+    const t = temps[i]
+    const tempC = typeof t === 'number' && Number.isFinite(t) ? t : null
     out.push({
       timeIso: forecast.time[i],
       radiationWm2: ghi,
       cloudPct: forecast.cloudCover[i],
+      tempC,
       estimatedKw,
     })
   }
