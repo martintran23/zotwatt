@@ -6,6 +6,7 @@ import {
   resolveAddressSuggestion,
   type AddressSuggestion,
 } from './lib/addressAutocomplete'
+import { extractUsPostalQueryDigits, isCanadianPostalWhole } from './lib/placeQueryPolicy'
 import { adviceForDay, APPLIANCES } from './lib/appliances'
 import { fetchSolarForecast } from './lib/openMeteo'
 import {
@@ -75,6 +76,12 @@ export default function App() {
     let cancelled = false
     const timer = window.setTimeout(async () => {
       const fid = ++suggestFetchId.current
+      if (isCanadianPostalWhole(q)) {
+        setSearchHits([])
+        setSuggestLastResolvedQuery(q)
+        setSuggestBusy(false)
+        return
+      }
       setSuggestBusy(true)
       try {
         const hits = await fetchAddressSuggestions(q)
@@ -156,7 +163,14 @@ export default function App() {
     setGeoStatus(null)
     const q = placeQuery.trim()
     if (!q) {
-      setError('Enter an address or city, or use your location.')
+      setError('Enter a city, US ZIP (then pick a city), or use your location.')
+      return
+    }
+    if (isCanadianPostalWhole(q)) {
+      setSearchHits([])
+      setError(
+        'Canadian postal codes are not expanded here. Enter your city and province, or type a city name to pick from suggestions.',
+      )
       return
     }
     setError(null)
@@ -164,7 +178,13 @@ export default function App() {
       const suggestions = await fetchAddressSuggestions(q)
       if (!suggestions.length) {
         setSearchHits([])
-        setError('No places matched. Try a nearby city or spelling.')
+        if (extractUsPostalQueryDigits(q)) {
+          setError(
+            'No cities in our place database list that ZIP. Try a nearby city name, or check the ZIP.',
+          )
+        } else {
+          setError('No places matched. Try a nearby city or spelling.')
+        }
         return
       }
       if (suggestions.length === 1) {
@@ -257,7 +277,7 @@ export default function App() {
             onSubmit={() => void submitAddressSearch()}
             onGeolocation={useGeolocation}
             disabled={loading}
-            placeholder="City, neighborhood, or address"
+            placeholder="City, state, or US ZIP (then pick a city)"
           />
 
           {showSuggestDropdown && (
@@ -272,7 +292,13 @@ export default function App() {
                 </li>
               )}
               {showSuggestEmpty && (
-                <li className="search-results__hint">No matching places. Try another spelling.</li>
+                <li className="search-results__hint">
+                  {isCanadianPostalWhole(trimmedQuery)
+                    ? 'Canadian postal codes are not expanded here — type a city and province.'
+                    : extractUsPostalQueryDigits(trimmedQuery)
+                      ? 'No cities list that ZIP in our database. Try a city name or another ZIP.'
+                      : 'No matching places. Try another spelling.'}
+                </li>
               )}
               {searchHits.map((s) => (
                 <li key={s.source === 'aws' ? s.placeId : `om-${s.id}`}>
@@ -310,12 +336,14 @@ export default function App() {
         )}
 
         <p className="welcome__hint">
-          Suggestions appear as you type (2+ characters)
+          Enter a <strong>city and state</strong>, a city name, or a <strong>US ZIP</strong>. For ZIPs we show{' '}
+          <strong>cities that include that ZIP</strong> so you pick one (we do not pin to the ZIP alone). Canadian
+          postal codes: use city and province. Suggestions appear as you type (2+ characters)
           {isAwsAutocompleteEnabled()
             ? ' using Amazon Location autocomplete'
             : ' using Open‑Meteo place search'}
-          . Press <strong>Enter</strong> or the arrow to search the current text. Forecast uses Open‑Meteo radiation
-          and clouds; results are estimates, not meter‑grade.
+          . Press <strong>Enter</strong> or the arrow to search. Forecast uses Open‑Meteo radiation and clouds; results
+          are estimates, not meter‑grade.
         </p>
       </div>
     )
