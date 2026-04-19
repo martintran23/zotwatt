@@ -127,7 +127,11 @@ export function NotificationsTab() {
                 most cost-effective and green time for heavy appliances.
               </p>
             </div>
-            <div className="zw-email-rec__img" aria-hidden />
+            <img
+              src="laundry.jpg"
+              alt="Laundry recommendation"
+              className="zw-email-rec__img"
+            />
           </div>
 
           <div className="zw-email-stats">
