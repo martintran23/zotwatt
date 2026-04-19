@@ -149,11 +149,11 @@ export function WhyItMattersPage() {
         <div className="wim-hero__row">
           <div className="wim-hero__copy">
             <h1 className="wim-hero__title">
-              Energy is a <span className="wim-hero__accent">natural rhythm</span>.
+              Energy follows<span className="wim-hero__accent"> the Sun</span>.
             </h1>
             <p className="wim-hero__lede">
-              Understanding how your home breathes with the sun isn&apos;t just about saving money. It&apos;s about
-              harmonizing your lifestyle with the planet&apos;s ecosystem.
+              Understanding how your home aligns with the sun isn’t 
+              just about saving money—it’s about using energy more efficiently and living more sustainably.
             </p>
           </div>
         </div>

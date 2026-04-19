@@ -77,7 +77,11 @@ export function AddressWelcome({
   onBrandClick,
 }: Props) {
   const emailError = error === 'Enter a valid email, then run your forecast.' ? error : null
-  const addressError = error === 'Enter a city and state, or use your location.' ? error : null
+  const addressError =
+    error === 'Enter a city and state, or use your location.' ||
+    error === 'No places matched. Try a nearby city or spelling.'
+      ? error
+      : null
   const formError = error && error !== emailError && error !== addressError ? error : null
 
   return (
@@ -100,14 +104,14 @@ export function AddressWelcome({
             <span className="ss-hero__badge-emoji" aria-hidden>
               🌱
             </span>{' '}
-            Nurturing your digital ecosystem
+            Smart Solar Scheduling
           </p>
           <h1 className="ss-hero__title">
-            Optimize Your Home <span className="ss-hero__title-accent">for the Sun.</span>
+            Optimize Your Home <span className="ss-hero__title-accent">Around the Sun.</span>
           </h1>
           <p className="ss-hero__sub">
-            Personalized solar forecasts designed to help you transition from managing a utility to nurturing a
-            sustainable sanctuary.
+            Personalized solar forecasts that tell you the best times to use energy based on your home's solar generation—saving
+             money and the environment.
           </p>
 
           <div className="ss-form-card">
@@ -178,8 +182,17 @@ export function AddressWelcome({
             </div>
 
             <button type="button" className="ss-cta" onClick={() => void onSubmitSearch()} disabled={loading}>
-              {loading ? 'Loading forecast…' : 'Get My Solar Forecast'}
-              {!loading && <span aria-hidden> →</span>}
+              {loading ? (
+                <>
+                  <span className="zw-loading-spinner zw-loading-spinner--light" aria-hidden />
+                  Loading forecast…
+                </>
+              ) : (
+                <>
+                  Get My Solar Forecast
+                  <span aria-hidden> →</span>
+                </>
+              )}
             </button>
 
             <p className="ss-form-hint">
@@ -190,10 +203,13 @@ export function AddressWelcome({
 
           <div className="ss-trust">
             <span className="ss-trust__item">
-              <IconCheck /> Secure data
+              <IconCheck /> Reduce Carbon Footprint
             </span>
             <span className="ss-trust__item">
-              <IconCheck /> 100% green energy
+              <IconCheck /> Reduce Energy Bills
+            </span>
+            <span className="ss-trust__item">
+              <IconCheck /> Reduce Grid Dependence
             </span>
           </div>
 
@@ -238,24 +254,40 @@ export function AddressWelcome({
           </div>
         </article>
         <article className="ss-feature-card ss-feature-card--stat">
-          <div className="ss-feature-stat">30%</div>
+          <div className="ss-feature-stat">21%</div>
           <p className="ss-feature-stat__copy">
-            Average reduction in energy costs for SolarShift members who shift usage to solar peaks.
+            Projected U.S. solar generation growth in 2026, according to the EIA. As midday solar expands, shifting
+            flexible usage into solar-rich hours can become more valuable on time-based rates.
           </p>
-          <button type="button" className="ss-feature-link">
+          <a
+            className="ss-feature-link"
+            href="https://www.energy.gov/energysaver/reducing-electricity-use-and-costs"
+            target="_blank"
+            rel="noreferrer"
+          >
             Learn more ↗
-          </button>
+          </a>
         </article>
         <section id="ss-why" className="ss-wide-card">
           <div className="ss-wide-card__copy">
-            <h2>Live monitoring</h2>
+            <div className="ss-wide-card__icon" aria-hidden>
+              $
+            </div>
+            <h2>Estimated savings, made visible</h2>
             <p className="ss-wide-card__lead">
-              Real-time data visualization that feels like nature. Watch your home&apos;s energy flow through beautiful,
-              organic waves.
+              Shift flexible loads into your strongest solar hours and you could trim an estimated 8-15% from the grid
+              power those tasks would otherwise use, depending on your rate plan, panel output, and appliance timing.
             </p>
           </div>
-          <div className="ss-wide-card__visual" role="img" aria-label="Preview placeholder">
-            <span>Coming soon: Energy flow view</span>
+          <div className="ss-wide-card__visual">
+            <img
+              className="ss-wide-card__img"
+              src="/panel-efficiency.png"
+              alt="Preview of a solar savings dashboard with bill savings and efficiency metrics"
+              width={480}
+              height={280}
+              loading="lazy"
+            />
           </div>
         </section>
       </div>

@@ -357,7 +357,8 @@ export default function App() {
   const main = whyMatters ? (
     <WhyItMattersPage />
   ) : loading && estimates.length === 0 ? (
-    <p className="zw-muted-small" role="status">
+    <p className="zw-muted-small zw-loading-inline" role="status">
+      <span className="zw-loading-spinner" aria-hidden />
       Loading forecast…
     </p>
   ) : tab === 'flow' ? (

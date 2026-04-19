@@ -129,22 +129,56 @@ function WeatherIcon({ avgCloud, className }: { avgCloud: number; className?: st
   return <IconOvercast className={className} />
 }
 
-function formatHourShort(iso: string, timeZone: string) {
-  return new Intl.DateTimeFormat(undefined, {
-    timeZone,
-    hour: 'numeric',
-    minute: '2-digit',
-  }).format(new Date(iso))
+function parseLocalIsoParts(iso: string) {
+  const match = iso.match(
+    /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})(?::(\d{2}))?$/,
+  )
+  if (!match) return null
+  return {
+    year: Number(match[1]),
+    month: Number(match[2]),
+    day: Number(match[3]),
+    hour: Number(match[4]),
+    minute: Number(match[5]),
+    second: Number(match[6] ?? '0'),
+  }
 }
 
-function formatLongDate(iso: string, timeZone: string) {
-  return new Intl.DateTimeFormat(undefined, {
+function formatHourShort(iso: string) {
+  const parts = parseLocalIsoParts(iso)
+  if (!parts) return iso
+  const period = parts.hour >= 12 ? 'PM' : 'AM'
+  const hour12 = parts.hour % 12 || 12
+  return `${hour12}:${String(parts.minute).padStart(2, '0')} ${period}`
+}
+
+function formatTime24Short(iso: string) {
+  const parts = parseLocalIsoParts(iso)
+  if (!parts) return iso
+  return `${String(parts.hour).padStart(2, '0')}:${String(parts.minute).padStart(2, '0')}`
+}
+
+function formatTimeZoneShort(iso: string, timeZone: string) {
+  const parts = parseLocalIsoParts(iso)
+  if (!parts) return timeZone
+  const probeDate = new Date(Date.UTC(parts.year, parts.month - 1, parts.day, 12))
+  const tzParts = new Intl.DateTimeFormat(undefined, {
     timeZone,
+    timeZoneName: 'short',
+  }).formatToParts(probeDate)
+  return tzParts.find((part) => part.type === 'timeZoneName')?.value ?? timeZone
+}
+
+function formatLongDate(iso: string) {
+  const parts = parseLocalIsoParts(iso)
+  if (!parts) return iso
+  return new Intl.DateTimeFormat(undefined, {
+    timeZone: 'UTC',
     weekday: 'long',
     month: 'long',
     day: 'numeric',
     year: 'numeric',
-  }).format(new Date(iso))
+  }).format(new Date(Date.UTC(parts.year, parts.month - 1, parts.day, 12)))
 }
 
 function computeSolarWindowLabel(hours: HourEstimate[], timeZone: string): string | null {
@@ -162,7 +196,8 @@ function computeSolarWindowLabel(hours: HourEstimate[], timeZone: string): strin
   const endI = Math.min(hours.length - 1, maxI + 2)
   const a = hours[startI].timeIso
   const b = hours[endI].timeIso
-  return `${formatHourShort(a, timeZone)} – ${formatHourShort(b, timeZone)}`
+  const tzLabel = formatTimeZoneShort(a, timeZone)
+  return `${formatHourShort(a)} – ${formatHourShort(b)} ${tzLabel}`
 }
 
 function pickChartBars(hours: HourEstimate[], barCount: number): { bars: HourEstimate[]; peakIdx: number } {
@@ -200,7 +235,7 @@ function atmosphereCopy(avgCloud: number): string {
 
 export function TodayGlowDashboard({ hours, timeZone, selectedPlace, kWp }: Props) {
   const placeLabel = selectedPlace.trim() || 'Your location'
-  const dateLine = hours[0] ? formatLongDate(hours[0].timeIso, timeZone) : '-'
+  const dateLine = hours[0] ? formatLongDate(hours[0].timeIso) : '-'
   const windowLabel = computeSolarWindowLabel(hours, timeZone)
 
   const maxKw = hours.length ? Math.max(...hours.map((h) => h.estimatedKw), 0.01) : 0.01
@@ -238,13 +273,7 @@ export function TodayGlowDashboard({ hours, timeZone, selectedPlace, kWp }: Prop
   const tickLabels = tickIdx.map((idx) => {
     const iso = bars[idx]?.timeIso
     if (!iso) return { idx, label: '-' as string }
-    const label = new Intl.DateTimeFormat(undefined, {
-      timeZone,
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: false,
-    }).format(new Date(iso))
-    return { idx, label }
+    return { idx, label: formatTime24Short(iso) }
   })
   const boldTickIdx =
     tickIdx.length > 0
@@ -377,7 +406,7 @@ export function TodayGlowDashboard({ hours, timeZone, selectedPlace, kWp }: Prop
             <h3 className="sd-card--eco__title">You&apos;ve saved {co2Saved} kg of CO₂ this week.</h3>
             <p className="sd-card--eco__lead">
               That&apos;s roughly equivalent to planting <strong>{trees.toFixed(1)}</strong> young trees in your
-              neighborhood (illustrative).
+              neighborhood.
             </p>
           </div>
           <div className="sd-card--eco__gauge" aria-hidden>

@@ -93,10 +93,9 @@ export function NotificationsTab() {
   return (
     <div className="zw-notif-page">
       <header className="zw-notif-header">
-        <h1 className="zw-notif-title">Email Notification Preview</h1>
+        <h1 className="zw-notif-title">Email Notification Service</h1>
         <p className="zw-notif-subtitle">
-          Review and customize the daily solar pulse your users receive to keep their energy habits in harmony with the
-          sun.
+          Get daily solar updates with personalized recommendations on when to run appliances for the most efficient, cost-effective times.
         </p>
       </header>
 
@@ -149,21 +148,6 @@ export function NotificationsTab() {
             <IconSunEmail />
           </div>
 
-          <div className="zw-email-footer-bar">
-            <p className="zw-email-footer-bar__text">
-              This is an automated daily pulse from your SolarShift Sanctuary. To adjust your notification frequency,
-              visit your Dashboard.
-            </p>
-            <div className="zw-email-footer-bar__links">
-              <a href="#" className="zw-email-footer-bar__link">
-                Unsubscribe
-              </a>
-              <span aria-hidden>·</span>
-              <a href="#" className="zw-email-footer-bar__link">
-                Manage Preferences
-              </a>
-            </div>
-          </div>
         </article>
 
         <aside className="zw-delivery-panel">
@@ -216,7 +200,7 @@ export function NotificationsTab() {
                 onClick={() => setSmartAlertsEnabled((v) => !v)}
                 aria-pressed={smartAlertsEnabled}
               >
-                Smart Alerts Only
+                Peak Hour Alerts
                 <span
                   className={`zw-delivery-toggle${smartAlertsEnabled ? ' zw-delivery-toggle--on' : ''}`}
                   aria-hidden
@@ -234,9 +218,6 @@ export function NotificationsTab() {
             <p className="zw-delivery-efficiency__body">
               Your current production is 15% higher than the regional average.
             </p>
-            <a href="#" className="zw-delivery-efficiency__link">
-              View Analytics →
-            </a>
           </div>
         </aside>
       </div>

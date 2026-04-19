@@ -8,6 +8,21 @@ export type HourEstimate = {
   estimatedKw: number
 }
 
+function parseLocalIsoParts(iso: string) {
+  const match = iso.match(
+    /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})(?::(\d{2}))?$/,
+  )
+  if (!match) return null
+  return {
+    year: Number(match[1]),
+    month: Number(match[2]),
+    day: Number(match[3]),
+    hour: Number(match[4]),
+    minute: Number(match[5]),
+    second: Number(match[6] ?? '0'),
+  }
+}
+
 export function estimateHourlyPower(
   forecast: {
     time: string[]
@@ -50,30 +65,32 @@ export function estimateHourlyPower(
 
 export function splitByLocalDay(
   estimates: HourEstimate[],
-  timeZone: string,
+  _timeZone: string,
 ): { dayKey: string; label: string; hours: HourEstimate[] }[] {
   const groups = new Map<string, HourEstimate[]>()
   const labels = new Map<string, string>()
 
   for (const h of estimates) {
-    const d = new Date(h.timeIso)
-    const dayKey = new Intl.DateTimeFormat('en-CA', {
-      timeZone,
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-    }).format(d)
+    const parts = parseLocalIsoParts(h.timeIso)
+    const dayKey = parts
+      ? `${String(parts.year).padStart(4, '0')}-${String(parts.month).padStart(2, '0')}-${String(parts.day).padStart(2, '0')}`
+      : h.timeIso.slice(0, 10)
     if (!groups.has(dayKey)) {
       groups.set(dayKey, [])
-      labels.set(
-        dayKey,
-        new Intl.DateTimeFormat(undefined, {
-          timeZone,
-          weekday: 'short',
-          month: 'short',
-          day: 'numeric',
-        }).format(d),
-      )
+      if (parts) {
+        const labelDate = new Date(Date.UTC(parts.year, parts.month - 1, parts.day, 12))
+        labels.set(
+          dayKey,
+          new Intl.DateTimeFormat(undefined, {
+            timeZone: 'UTC',
+            weekday: 'short',
+            month: 'short',
+            day: 'numeric',
+          }).format(labelDate),
+        )
+      } else {
+        labels.set(dayKey, dayKey)
+      }
     }
     groups.get(dayKey)!.push(h)
   }

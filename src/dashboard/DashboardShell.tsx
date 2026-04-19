@@ -35,15 +35,16 @@ function IconInsights({ className }: { className?: string }) {
   )
 }
 
-function IconEco({ className }: { className?: string }) {
+function IconBell({ className }: { className?: string }) {
   return (
     <svg className={className} width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden>
       <path
-        d="M12 21C7 16 4 12 4 8a8 8 0 0 1 16 0c0 4-3 8-8 13z"
+        d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"
         stroke="currentColor"
         strokeWidth="1.75"
-        strokeLinejoin="round"
+        strokeLinecap="round"
       />
+      <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
     </svg>
   )
 }
@@ -105,13 +106,13 @@ export function DashboardShell({
       {smsLayout && (
         <nav className="sd-sms-tabs" aria-label="Leave SMS and open a section">
           <button type="button" className="sd-sms-tabs__btn" onClick={() => onTab('flow')}>
-            Optimize
+            Home
           </button>
           <button type="button" className="sd-sms-tabs__btn" onClick={() => onTab('forecast')}>
-            Insights
+            Forecast
           </button>
           <button type="button" className="sd-sms-tabs__btn" onClick={() => onTab('impact')}>
-            Impact
+            Get Notified
           </button>
         </nav>
       )}
@@ -120,9 +121,9 @@ export function DashboardShell({
         {!fullWidthLayout && !whyMatters && (
           <aside className="sd-sidenav" aria-label="App sections">
             <nav className="sd-sidenav__nav">
-              {navItem('flow', 'Optimize', IconOptimize, 'side')}
-              {navItem('forecast', 'Insights', IconInsights, 'side')}
-              {navItem('impact', 'Impact', IconEco, 'side')}
+              {navItem('flow', 'Home', IconOptimize, 'side')}
+              {navItem('forecast', 'Forecast', IconInsights, 'side')}
+              {navItem('impact', 'Get Notified', IconBell, 'side')}
             </nav>
           </aside>
         )}
@@ -139,9 +140,9 @@ export function DashboardShell({
       {!fullWidthLayout && (
         <div className="sd-mobile-nav" aria-label="Mobile sections">
           <nav className="sd-mobile-nav__inner">
-            {!whyMatters && navItem('flow', 'Optimize', IconOptimize, 'mobile')}
-            {!whyMatters && navItem('forecast', 'Insights', IconInsights, 'mobile')}
-            {!whyMatters && navItem('impact', 'Impact', IconEco, 'mobile')}
+            {!whyMatters && navItem('flow', 'Home', IconOptimize, 'mobile')}
+            {!whyMatters && navItem('forecast', 'Forecast', IconInsights, 'mobile')}
+            {!whyMatters && navItem('impact', 'Get Notified', IconBell, 'mobile')}
           </nav>
         </div>
       )}

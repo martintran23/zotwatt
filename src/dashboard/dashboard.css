@@ -495,7 +495,7 @@ h3,
 }
 
 .ss-wide-card {
-  padding: 1.5rem 1.25rem;
+  padding: 1.5rem;
   box-sizing: border-box;
   background: #fff;
   border-radius: var(--zw-radius);
@@ -507,10 +507,10 @@ h3,
   align-items: center;
 }
 
-@media (min-width: 720px) {
+@media (min-width: 680px) {
   .ss-wide-card {
-    grid-template-columns: var(--ss-spot-main) var(--ss-spot-side);
-    padding: 1.75rem 1.25rem;
+    grid-template-columns: minmax(0, 1fr) minmax(240px, 38%);
+    padding: 1.5rem;
   }
 }
 
@@ -518,10 +518,25 @@ h3,
   margin: 0;
 }
 
+.ss-wide-card__icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: #dcfce7;
+  color: #15803d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.15rem;
+  font-weight: 800;
+  margin-bottom: 0.75rem;
+}
+
 .ss-wide-card h2 {
   margin: 0 0 0.5rem;
-  font-size: 1.2rem;
+  font-size: 1.15rem;
   font-weight: 800;
+  color: #1a1a1a;
 }
 
 .ss-wide-card__lead {
@@ -532,17 +547,63 @@ h3,
 }
 
 .ss-wide-card__visual {
-  min-height: 160px;
-  border-radius: var(--zw-radius-sm);
-  background: linear-gradient(135deg, var(--zw-secondary-soft) 0%, rgb(253 184 19 / 0.25) 55%, var(--zw-secondary) 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 1rem;
-  font-size: 0.95rem;
-  font-weight: 700;
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;   /* or try 3/2, 4/3 — whatever fits your card */
+  overflow: hidden;
+  border-radius: 8px;      /* optional */
+}
+
+.ss-wide-card__img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;        /* fills frame, crops edges */
+  object-position: center;  /* focal point — adjust if needed */
+  filter: grayscale(1) contrast(1.05);
+}
+
+.ss-wide-card__caption {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 12px;
+  padding: 0.8rem 0.9rem;
+  border-radius: 14px;
+  background: rgb(255 255 255 / 88%);
+  backdrop-filter: blur(8px);
   color: #1d5d6d;
+  text-align: center;
+  font-size: 0.88rem;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.zw-loading-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.zw-loading-spinner {
+  width: 0.95rem;
+  height: 0.95rem;
+  border-radius: 999px;
+  border: 2px solid rgb(12 103 128 / 0.2);
+  border-top-color: #0c6780;
+  animation: zw-spin 0.75s linear infinite;
+}
+
+.zw-loading-spinner--light {
+  border-color: rgb(26 26 26 / 0.22);
+  border-top-color: #1a1a1a;
+}
+
+@keyframes zw-spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .zw-inline-link {
@@ -1037,6 +1098,55 @@ h3,
   margin-bottom: 12px;
 }
 
+.zw-forecast-practical {
+  margin: 0 0 10px;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: var(--zw-muted);
+}
+
+.zw-forecast-practical--peak {
+  color: var(--zw-text);
+}
+
+.zw-forecast-peaks {
+  margin-top: 18px;
+}
+
+.zw-forecast-peaks__label {
+  margin-bottom: 8px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--zw-muted);
+}
+
+.zw-forecast-peaks__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(108px, 1fr));
+  gap: 8px;
+}
+
+.zw-forecast-peak-card {
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: #f7f5f1;
+  border: 1px solid var(--zw-border);
+}
+
+.zw-forecast-peak-card__time {
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: var(--zw-text);
+}
+
+.zw-forecast-peak-card__value {
+  margin-top: 3px;
+  font-size: 0.74rem;
+  color: var(--zw-muted);
+}
+
 .zw-forecast-badges {
   display: flex;
   gap: 8px;
@@ -1231,15 +1341,16 @@ h3,
   width: 52px;
   height: 52px;
   border-radius: 50%;
-  background: #4bd79b;
+  background: #fdb813;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
   box-shadow: 0 4px 10px rgb(0 0 0 / 10%), inset 0 1px 0 rgb(255 255 255 / 35%);
+  color: #6b4b00;
 }
 
-.zw-impact-leaf-svg {
+.zw-impact-bell-svg {
   width: 28px;
   height: 28px;
   display: block;
@@ -1266,18 +1377,6 @@ h3,
   color: var(--zw-muted);
 }
 
-.zw-impact-trees {
-  margin: 0;
-  font-size: 0.82rem;
-  font-weight: 600;
-  line-height: 1.45;
-  color: #1f5c3d;
-}
-
-.zw-impact-trees strong {
-  font-weight: 800;
-}
-
 .zw-impact-report-link {
   flex-shrink: 0;
   align-self: center;
@@ -1288,7 +1387,7 @@ h3,
   font: inherit;
   font-size: 0.78rem;
   font-weight: 700;
-  color: #1f5c3d;
+  color: #6b4b00;
   cursor: pointer;
   text-align: right;
   line-height: 1.25;
@@ -1953,43 +2052,65 @@ h3,
 }
 
 .chart figcaption {
-  font-size: 0.85rem;
+  font-size: 0.95rem;
   font-weight: 700;
   color: var(--zw-text);
-  margin-bottom: 8px;
+  margin-bottom: 12px;
 }
 
 .chart-bars {
   display: flex;
-  align-items: flex-end;
-  gap: 2px;
-  height: 120px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid var(--zw-border);
+  align-items: stretch;
+  gap: 6px;
+  height: 168px;
+  min-width: max-content;
 }
 
 .chart-bar-wrap {
-  flex: 1;
-  min-width: 6px;
-  max-width: 20px;
+  flex: 0 0 26px;
+  min-width: 26px;
+  max-width: 26px;
   height: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
   align-items: center;
+}
+
+.chart-bar-slot {
+  width: 100%;
+  flex: 1;
+  display: flex;
+  align-items: flex-end;
+  position: relative;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.chart-bar-slot::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-bottom: 1px solid var(--zw-border);
+  z-index: 2;
+  pointer-events: none;
 }
 
 .chart-bar {
   width: 100%;
-  min-height: 2px;
+  position: relative;
+  z-index: 1;
   border-radius: 6px 6px 0 0;
-  background: linear-gradient(180deg, var(--zw-secondary), var(--zw-primary));
+  background: linear-gradient(180deg, var(--zw-primary), var(--zw-secondary));
 }
 
 .chart-tick {
-  font-size: 0.55rem;
+  font-size: 0.62rem;
   color: var(--zw-muted);
-  margin-top: 4px;
+  margin-top: 6px;
+  white-space: nowrap;
+  line-height: 1;
 }
 
 /* SolarShift dashboard shell (post-address) */
@@ -2731,6 +2852,7 @@ h3,
   height: 14rem;
   padding: 0 0.5rem;
   position: relative;
+  overflow: hidden;
 }
 
 @media (min-width: 768px) {
@@ -2749,6 +2871,7 @@ h3,
   justify-content: flex-end;
   height: 100%;
   position: relative;
+  overflow: hidden;
 }
 
 .sd-chart__bar {

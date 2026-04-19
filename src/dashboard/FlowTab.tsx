@@ -95,10 +95,6 @@ export function FlowTab({ hours, timeZone, peakLabel }: Props) {
   for (let i = 0; i < src.length && sample.length < 7; i += step) sample.push(src[i])
   const peakIdx = sample.reduce((bi, h, i, arr) => (h.estimatedKw > arr[bi].estimatedKw ? i : bi), 0)
 
-  const co2Saved = Math.max(1, Math.round(maxKw * 12))
-  /** Rough equivalency for display (~23 kg CO₂ per tree). */
-  const treesPlanted = co2Saved / 23.33
-
   return (
     <>
       <div className="zw-section-title zw-flow-head">
@@ -246,31 +242,31 @@ export function FlowTab({ hours, timeZone, peakLabel }: Props) {
 
       <div className="zw-impact-banner">
         <div className="zw-impact-icon" aria-hidden>
-          <svg className="zw-impact-leaf-svg" viewBox="0 0 32 32" fill="none">
-            <g transform="translate(16 17) rotate(40)">
-              <path
-                fill="#004832"
-                d="M0 11.2C-7.2 4.2-6.8-8.2 0-10.5 6.8-8.2 7.2 4.2 0 11.2z"
-              />
-              <path
-                d="M-3 7.5 Q0 .5 3.2-8.2"
-                stroke="#005c44"
-                strokeWidth="1.1"
-                strokeLinecap="round"
-                fill="none"
-              />
-            </g>
+          <svg className="zw-impact-bell-svg" viewBox="0 0 32 32" fill="none">
+            <path
+              d="M22.8 12.1a6.8 6.8 0 0 0-13.6 0c0 7.2-3.4 9.2-3.4 9.2h20.4s-3.4-2-3.4-9.2Z"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+            <path
+              d="M13.3 25.3a2.7 2.7 0 0 0 5.4 0"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+            />
           </svg>
         </div>
         <div className="zw-impact-copy">
-          <h3 className="zw-impact-heading">Your Impact</h3>
-          <p className="zw-impact-detail">You&apos;ve saved {co2Saved} kg of CO₂ this week.</p>
-          <p className="zw-impact-trees">
-            Equivalent to <strong>{treesPlanted.toFixed(1)} trees</strong> planted.
+          <h3 className="zw-impact-heading">Get Notified</h3>
+          <p className="zw-impact-detail">
+            Receive alerts when your strongest solar hours arrive so you can run appliances at lower-cost, cleaner
+            times.
           </p>
         </div>
         <button type="button" className="zw-impact-report-link">
-          View detailed report <span className="zw-impact-report-arrow" aria-hidden>→</span>
+          Enable alerts <span className="zw-impact-report-arrow" aria-hidden>→</span>
         </button>
       </div>
     </>
