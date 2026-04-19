@@ -1,8 +1,3 @@
-type Props = {
-  onViewDashboard: () => void
-  onGetSmartAlerts: () => void
-}
-
 function IconTwilight({ className }: { className?: string }) {
   return (
     <svg className={className} width="32" height="32" viewBox="0 0 24 24" fill="none" aria-hidden>
@@ -147,15 +142,7 @@ function IconThunderbolt({ className }: { className?: string }) {
   )
 }
 
-function IconArrowForward({ className }: { className?: string }) {
-  return (
-    <svg className={className} width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden>
-      <path d="M5 12h14m-4-4 4 4-4 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  )
-}
-
-export function WhyItMattersPage({ onViewDashboard, onGetSmartAlerts }: Props) {
+export function WhyItMattersPage() {
   return (
     <div className="wim">
       <section className="wim-hero">
@@ -168,9 +155,6 @@ export function WhyItMattersPage({ onViewDashboard, onGetSmartAlerts }: Props) {
               Understanding how your home breathes with the sun isn&apos;t just about saving money. It&apos;s about
               harmonizing your lifestyle with the planet&apos;s ecosystem.
             </p>
-          </div>
-          <div className="wim-hero__meta">
-            <span className="wim-section-label">Section 01 / 04</span>
           </div>
         </div>
       </section>
@@ -309,7 +293,7 @@ export function WhyItMattersPage({ onViewDashboard, onGetSmartAlerts }: Props) {
                 &quot;My home reduced hundreds of kilograms of carbon emissions this year just by shifting my dishwasher
                 to run when the sun is strongest.&quot;
               </p>
-              <footer>Sarah, SolarShift user</footer>
+              <footer>Atticus Wong, SolarShift user</footer>
             </blockquote>
           </div>
         </div>
@@ -339,21 +323,6 @@ export function WhyItMattersPage({ onViewDashboard, onGetSmartAlerts }: Props) {
               </div>
             </div>
           </div>
-        </div>
-      </section>
-
-      <section className="wim-cta" aria-labelledby="wim-cta-title">
-        <h2 id="wim-cta-title" className="wim-cta__title">
-          Ready to shift your power?
-        </h2>
-        <div className="wim-cta__actions">
-          <button type="button" className="wim-btn wim-btn--primary" onClick={onViewDashboard}>
-            View My Dashboard
-            <IconArrowForward />
-          </button>
-          <button type="button" className="wim-btn wim-btn--ghost" onClick={onGetSmartAlerts}>
-            Get Smart Alerts
-          </button>
         </div>
       </section>
 

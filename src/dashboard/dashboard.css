@@ -249,6 +249,14 @@ h3,
   margin-top: 14px;
 }
 
+.ss-form-card__email-error {
+  margin-bottom: 0;
+}
+
+.ss-form-card__address-error {
+  margin-bottom: 0;
+}
+
 .ss-landing .address-stack {
   position: relative;
 }
@@ -2172,27 +2180,6 @@ h3,
   }
 }
 
-.sd-sidenav__brand-block {
-  margin-bottom: 2.5rem;
-}
-
-.sd-sidenav__title {
-  margin: 0;
-  font-family: var(--zw-font-headline);
-  font-size: 1.25rem;
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  color: var(--sd-zinc-900);
-}
-
-.sd-sidenav__tag {
-  margin: 0.25rem 0 0;
-  font-size: 0.7rem;
-  font-weight: 600;
-  color: #71717a;
-  text-transform: none;
-}
-
 .sd-sidenav__nav {
   display: flex;
   flex-direction: column;
@@ -2312,7 +2299,7 @@ h3,
 
 .sd-mobile-nav__inner {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 0.25rem;
   max-width: 36rem;
   margin: 0 auto;
@@ -3046,6 +3033,7 @@ h3,
 }
 
 .wim-hero__accent {
+  white-space: nowrap;
   color: #b45309;
 }
 

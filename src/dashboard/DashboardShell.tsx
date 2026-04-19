@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 
-export type Tab = 'flow' | 'forecast' | 'schedule' | 'impact' | 'sms' | 'notifications'
+export type Tab = 'flow' | 'forecast' | 'impact' | 'sms' | 'notifications'
 
 type Props = {
   active: Tab
@@ -43,20 +43,6 @@ function IconEco({ className }: { className?: string }) {
         stroke="currentColor"
         strokeWidth="1.75"
         strokeLinejoin="round"
-      />
-    </svg>
-  )
-}
-
-function IconSettings({ className }: { className?: string }) {
-  return (
-    <svg className={className} width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden>
-      <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="1.75" />
-      <path
-        d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"
-        stroke="currentColor"
-        strokeWidth="1.75"
-        strokeLinecap="round"
       />
     </svg>
   )
@@ -124,9 +110,6 @@ export function DashboardShell({
           <button type="button" className="sd-sms-tabs__btn" onClick={() => onTab('forecast')}>
             Insights
           </button>
-          <button type="button" className="sd-sms-tabs__btn" onClick={() => onTab('schedule')}>
-            Settings
-          </button>
           <button type="button" className="sd-sms-tabs__btn" onClick={() => onTab('impact')}>
             Impact
           </button>
@@ -136,18 +119,11 @@ export function DashboardShell({
       <div className="sd-frame">
         {!fullWidthLayout && !whyMatters && (
           <aside className="sd-sidenav" aria-label="App sections">
-            <div className="sd-sidenav__brand-block">
-              <h2 className="sd-sidenav__title">SolarShift</h2>
-              <p className="sd-sidenav__tag">Eco-Friendly Living</p>
-            </div>
             <nav className="sd-sidenav__nav">
               {navItem('flow', 'Optimize', IconOptimize, 'side')}
               {navItem('forecast', 'Insights', IconInsights, 'side')}
               {navItem('impact', 'Impact', IconEco, 'side')}
             </nav>
-            <div className="sd-sidenav__foot">
-              {navItem('schedule', 'Settings', IconSettings, 'side')}
-            </div>
           </aside>
         )}
 
@@ -166,7 +142,6 @@ export function DashboardShell({
             {!whyMatters && navItem('flow', 'Optimize', IconOptimize, 'mobile')}
             {!whyMatters && navItem('forecast', 'Insights', IconInsights, 'mobile')}
             {!whyMatters && navItem('impact', 'Impact', IconEco, 'mobile')}
-            {navItem('schedule', 'Settings', IconSettings, 'mobile')}
           </nav>
         </div>
       )}

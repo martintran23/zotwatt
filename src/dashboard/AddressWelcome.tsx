@@ -76,6 +76,10 @@ export function AddressWelcome({
   onPickSuggestion,
   onBrandClick,
 }: Props) {
+  const emailError = error === 'Enter a valid email, then run your forecast.' ? error : null
+  const addressError = error === 'Enter a city and state, or use your location.' ? error : null
+  const formError = error && error !== emailError && error !== addressError ? error : null
+
   return (
     <div className="ss-landing">
       <header className="ss-header ss-header--minimal">
@@ -117,6 +121,11 @@ export function AddressWelcome({
                 disabled={loading}
                 placeholder="City, state, or address (e.g. Irvine, CA)"
               />
+              {addressError && (
+                <p className="zw-error ss-form-card__address-error" role="alert">
+                  {addressError}
+                </p>
+              )}
 
               {showSuggestDropdown && (
                 <ul className="search-results" role="listbox" aria-label="Place suggestions">
@@ -161,6 +170,11 @@ export function AddressWelcome({
                 onChange={(e) => onWelcomeEmailChange(e.target.value)}
                 disabled={loading}
               />
+              {emailError && (
+                <p className="zw-error ss-form-card__email-error" role="alert">
+                  {emailError}
+                </p>
+              )}
             </div>
 
             <button type="button" className="ss-cta" onClick={() => void onSubmitSearch()} disabled={loading}>
@@ -192,9 +206,9 @@ export function AddressWelcome({
             </p>
           )}
 
-          {error && (
+          {formError && (
             <p className="zw-error ss-landing__alert" role="alert">
-              {error}
+              {formError}
             </p>
           )}
         </div>
