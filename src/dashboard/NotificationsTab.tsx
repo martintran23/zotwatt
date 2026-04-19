@@ -76,8 +76,8 @@ export function NotificationsTab() {
   const [sendTime, setSendTime] = useState('07:30 AM')
   const [editingTime, setEditingTime] = useState(false)
   const [timeInput, setTimeInput] = useState('07:30')
-  const [dailyDigestOn, setDailyDigestOn] = useState(true)
-  const [smartAlertsOn, setSmartAlertsOn] = useState(false)
+  const [dailyDigestEnabled, setDailyDigestEnabled] = useState(true)
+  const [smartAlertsEnabled, setSmartAlertsEnabled] = useState(false)
 
   function commitTime() {
     if (timeInput) {
@@ -200,25 +200,25 @@ export function NotificationsTab() {
             <div className="zw-delivery-modes">
               <button
                 type="button"
-                className="zw-delivery-mode"
-                onClick={() => setDailyDigestOn((v) => !v)}
-                aria-pressed={dailyDigestOn}
+                className={`zw-delivery-mode zw-delivery-mode--ghost${dailyDigestEnabled ? ' zw-delivery-mode--ghost-active' : ''}`}
+                onClick={() => setDailyDigestEnabled((v) => !v)}
+                aria-pressed={dailyDigestEnabled}
               >
                 Daily Digest
                 <span
-                  className={`zw-delivery-toggle${dailyDigestOn ? ' zw-delivery-toggle--on' : ''}`}
+                  className={`zw-delivery-toggle${dailyDigestEnabled ? ' zw-delivery-toggle--on' : ''}`}
                   aria-hidden
                 />
               </button>
               <button
                 type="button"
-                className="zw-delivery-mode"
-                onClick={() => setSmartAlertsOn((v) => !v)}
-                aria-pressed={smartAlertsOn}
+                className={`zw-delivery-mode zw-delivery-mode--ghost${smartAlertsEnabled ? ' zw-delivery-mode--ghost-active' : ''}`}
+                onClick={() => setSmartAlertsEnabled((v) => !v)}
+                aria-pressed={smartAlertsEnabled}
               >
-                Smart Alerts
+                Smart Alerts Only
                 <span
-                  className={`zw-delivery-toggle${smartAlertsOn ? ' zw-delivery-toggle--on' : ''}`}
+                  className={`zw-delivery-toggle${smartAlertsEnabled ? ' zw-delivery-toggle--on' : ''}`}
                   aria-hidden
                 />
               </button>

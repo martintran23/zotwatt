@@ -7,13 +7,11 @@ import {
 } from './lib/addressAutocomplete'
 import { estimateHourlyPower, rankPeaks, splitByLocalDay, type HourEstimate } from './lib/solarModel'
 import { isPostalOnlyQuery } from './lib/placeQueryPolicy'
-import { fetchSolarForecast } from './lib/openMeteo'
+import { fetchForecastWithOptimizeFirst } from './lib/optimizeApi'
 import { isWelcomeEmailValid } from './lib/welcomeEmail'
 import { DashboardShell, type Tab } from './dashboard/DashboardShell.tsx'
 import { TodayGlowDashboard } from './dashboard/TodayGlowDashboard.tsx'
 import { ForecastTab } from './dashboard/ForecastTab.tsx'
-import { ScheduleTab } from './dashboard/ScheduleTab.tsx'
-import { ImpactTab } from './dashboard/ImpactTab.tsx'
 import { SmsTab } from './dashboard/SmsTab.tsx'
 import { NotificationsTab } from './dashboard/NotificationsTab.tsx'
 import { LocationModal } from './dashboard/LocationModal.tsx'
@@ -35,8 +33,8 @@ export default function App() {
 
   const [lat, setLat] = useState('')
   const [lon, setLon] = useState('')
-  const [kWp, setKWp] = useState('8')
-  const [performanceRatio, setPerformanceRatio] = useState('0.78')
+  const [kWp] = useState('8')
+  const [performanceRatio] = useState('0.78')
 
   const [timezone, setTimezone] = useState('UTC')
   const [estimates, setEstimates] = useState<HourEstimate[]>([])
@@ -47,6 +45,7 @@ export default function App() {
   const [suggestLastResolvedQuery, setSuggestLastResolvedQuery] = useState('')
   const suggestGen = useRef(0)
   const suggestFetchId = useRef(0)
+  const suppressNextSuggest = useRef(false)
 
   const days = useMemo(() => splitByLocalDay(estimates, timezone), [estimates, timezone])
 
@@ -55,6 +54,14 @@ export default function App() {
 
   useEffect(() => {
     const q = placeQuery.trim()
+    if (suppressNextSuggest.current) {
+      suppressNextSuggest.current = false
+      setSearchHits([])
+      setSuggestBusy(false)
+      setSuggestLastResolvedQuery('')
+      return
+    }
+
     if (q.length < SUGGEST_MIN_CHARS) {
       suggestGen.current += 1
       suggestFetchId.current += 1
@@ -111,7 +118,13 @@ export default function App() {
       setLoading(true)
       setError(null)
       try {
-        const forecast = await fetchSolarForecast(latitude, longitude)
+        const forecast = await fetchForecastWithOptimizeFirst(
+          latitude,
+          longitude,
+          peakKWp,
+          pr,
+          selectedPlace || undefined,
+        )
         setTimezone(forecast.timezone)
         setEstimates(estimateHourlyPower(forecast, peakKWp, pr))
         return true
@@ -123,26 +136,30 @@ export default function App() {
         setLoading(false)
       }
     },
-    [kWp, performanceRatio],
+    [kWp, performanceRatio, selectedPlace],
   )
 
   const completeWithSuggestion = useCallback(
     async (s: AddressSuggestion) => {
+      suggestGen.current += 1
+      suggestFetchId.current += 1
       setSearchHits([])
+      setSuggestBusy(false)
+      setSuggestLastResolvedQuery('')
       setError(null)
-      if (phase === 'address' && !isWelcomeEmailValid(welcomeEmail)) {
-        setError('Enter a valid email, then choose a place or tap Get My Solar Forecast.')
-        return
-      }
       try {
         const { latitude, longitude, label } = await resolveAddressSuggestion(s)
         setLat(String(latitude))
         setLon(String(longitude))
         setSelectedPlace(label)
+        if (phase === 'address') {
+          suppressNextSuggest.current = true
+          setPlaceQuery(label)
+          return
+        }
         const ok = await runForecast(latitude, longitude)
         if (ok) {
           setPlaceQuery('')
-          setWelcomeEmail('')
           setLocationOpen(false)
           setPhase('dashboard')
         }
@@ -150,7 +167,7 @@ export default function App() {
         setError(e instanceof Error ? e.message : 'Could not resolve this place.')
       }
     },
-    [phase, welcomeEmail, runForecast],
+    [phase, runForecast],
   )
 
   const submitAddressSearch = async () => {
@@ -162,9 +179,21 @@ export default function App() {
     }
     setError(null)
     const q = placeQuery.trim()
+    const la = Number(lat)
+    const lo = Number(lon)
+
+    if (selectedPlace && q === selectedPlace && Number.isFinite(la) && Number.isFinite(lo)) {
+      const ok = await runForecast(la, lo)
+      if (ok) {
+        setPlaceQuery('')
+        setWelcomeEmail('')
+        setLocationOpen(false)
+        setPhase('dashboard')
+      }
+      return
+    }
+
     if (!q) {
-      const la = Number(lat)
-      const lo = Number(lon)
       if (selectedPlace === 'Your location' && Number.isFinite(la) && Number.isFinite(lo)) {
         const ok = await runForecast(la, lo)
         if (ok) {
@@ -190,7 +219,17 @@ export default function App() {
         return
       }
       if (suggestions.length === 1) {
-        await completeWithSuggestion(suggestions[0])
+        const { latitude, longitude, label } = await resolveAddressSuggestion(suggestions[0])
+        setLat(String(latitude))
+        setLon(String(longitude))
+        setSelectedPlace(label)
+        const ok = await runForecast(latitude, longitude)
+        if (ok) {
+          setPlaceQuery('')
+          setWelcomeEmail('')
+          setLocationOpen(false)
+          setPhase('dashboard')
+        }
         return
       }
       setSearchHits(suggestions)
@@ -257,12 +296,6 @@ export default function App() {
     }, 350)
   }, [])
 
-  const refreshReport = useCallback(async () => {
-    const latitude = Number(lat)
-    const longitude = Number(lon)
-    await runForecast(latitude, longitude)
-  }, [lat, lon, runForecast])
-
   const firstDay = days[0]
   const firstDayHours = firstDay?.hours ?? []
   const peaks = rankPeaks(firstDayHours, 4)
@@ -322,7 +355,7 @@ export default function App() {
   }
 
   const main = whyMatters ? (
-    <WhyItMattersPage onViewDashboard={() => goTab('flow')} onGetSmartAlerts={() => goTab('notifications')} />
+    <WhyItMattersPage />
   ) : loading && estimates.length === 0 ? (
     <p className="zw-muted-small" role="status">
       Loading forecast…
@@ -333,24 +366,11 @@ export default function App() {
       timeZone={timezone}
       selectedPlace={selectedPlace}
       kWp={kWp}
-      onOpenSchedule={() => goTab('schedule')}
     />
   ) : tab === 'forecast' ? (
     <ForecastTab days={days} timeZone={timezone} peaks={peaks} />
-  ) : tab === 'schedule' ? (
-    <ScheduleTab
-      selectedPlace={selectedPlace}
-      kWp={kWp}
-      performanceRatio={performanceRatio}
-      onKwp={setKWp}
-      onPr={setPerformanceRatio}
-      onRefresh={() => void refreshReport()}
-      loading={loading}
-      error={error}
-      onReturnToAddress={goBackToAddress}
-    />
   ) : tab === 'impact' ? (
-    <ImpactTab days={days} />
+    <NotificationsTab />
   ) : tab === 'notifications' ? (
     <NotificationsTab />
   ) : (
@@ -363,10 +383,10 @@ export default function App() {
         active={tab}
         onTab={goTab}
         onFab={() => setLocationOpen(true)}
-        onSms={() => goTab('notifications')}
+        onHome={goBackToAddress}
         whyMatters={whyMatters}
         onOpenWhyMatters={() => setWhyMatters(true)}
-        onBrandClick={goBackToAddress}
+        onCloseWhyMatters={() => setWhyMatters(false)}
       >
         {main}
       </DashboardShell>

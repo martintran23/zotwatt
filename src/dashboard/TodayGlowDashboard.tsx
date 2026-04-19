@@ -5,14 +5,18 @@ type Props = {
   timeZone: string
   selectedPlace: string
   kWp: string
-  onOpenSchedule: () => void
 }
 
-/** Six-vertex lightning (closed zigzag); stays legible at small sizes in the Solar Window chip. */
 function IconBolt({ className }: { className?: string }) {
   return (
-    <svg className={className} width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
-      <path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z" />
+    <svg className={className} width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path
+        d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   )
 }
@@ -125,28 +129,6 @@ function WeatherIcon({ avgCloud, className }: { avgCloud: number; className?: st
   return <IconOvercast className={className} />
 }
 
-function IconOpenNew({ className }: { className?: string }) {
-  return (
-    <svg className={className} width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden>
-      <path
-        d="M14 3h7v7M10 14 21 3M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  )
-}
-
-function IconArrowForward({ className }: { className?: string }) {
-  return (
-    <svg className={className} width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden>
-      <path d="M5 12h14m-4-4 4 4-4 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  )
-}
-
 function formatHourShort(iso: string, timeZone: string) {
   return new Intl.DateTimeFormat(undefined, {
     timeZone,
@@ -216,7 +198,7 @@ function atmosphereCopy(avgCloud: number): string {
   return 'Cloudier conditions smooth the curve; watch for brighter hours to batch discretionary usage.'
 }
 
-export function TodayGlowDashboard({ hours, timeZone, selectedPlace, kWp, onOpenSchedule }: Props) {
+export function TodayGlowDashboard({ hours, timeZone, selectedPlace, kWp }: Props) {
   const placeLabel = selectedPlace.trim() || 'Your location'
   const dateLine = hours[0] ? formatLongDate(hours[0].timeIso, timeZone) : '-'
   const windowLabel = computeSolarWindowLabel(hours, timeZone)
@@ -274,7 +256,6 @@ export function TodayGlowDashboard({ hours, timeZone, selectedPlace, kWp, onOpen
       <header className="sd-glow__hero">
         <div className="sd-glow__hero-row">
           <div className="sd-glow__hero-titles">
-            <span className="sd-glow__kicker">Your Luminous Sanctuary</span>
             <h1 className="sd-glow__title">Today&apos;s Glow</h1>
           </div>
           <div className="sd-glow__hero-meta">
@@ -299,10 +280,6 @@ export function TodayGlowDashboard({ hours, timeZone, selectedPlace, kWp, onOpen
               <br />
               <span className="sd-card--solar-window__accent">{windowLabel ?? '-'}</span>
             </h2>
-            <button type="button" className="sd-btn-pill" onClick={onOpenSchedule}>
-              Schedule Appliances
-              <IconArrowForward />
-            </button>
           </div>
         </article>
 
@@ -392,9 +369,6 @@ export function TodayGlowDashboard({ hours, timeZone, selectedPlace, kWp, onOpen
             Your modeled system is operating at about {panelEfficiency}% of today&apos;s theoretical peak, based on
             irradiance and cloud cover in the forecast.
           </p>
-          <button type="button" className="sd-link-details" onClick={onOpenSchedule}>
-            View details <IconOpenNew />
-          </button>
         </article>
 
         <article className="sd-card sd-card--eco">
@@ -415,15 +389,6 @@ export function TodayGlowDashboard({ hours, timeZone, selectedPlace, kWp, onOpen
         </article>
       </div>
 
-      <footer className="sd-glow__footer">
-        <div className="sd-glow__footer-brand">SolarShift</div>
-        <nav className="sd-glow__footer-links" aria-label="Legal">
-          <a href="#">Privacy Policy</a>
-          <a href="#">Terms of Service</a>
-          <a href="#">Contact Support</a>
-        </nav>
-        <p className="sd-glow__footer-copy">© {new Date().getFullYear()} SolarShift. Nurturing your digital ecosystem.</p>
-      </footer>
     </div>
   )
 }
