@@ -1,5 +1,7 @@
 # ☀️ ZotWatt
 
+**Live demo:** [https://main.d3aftn56t13u83.amplifyapp.com](https://main.d3aftn56t13u83.amplifyapp.com)
+
 ZotWatt is a solar usage optimizer that helps users decide the best times to run household appliances based on solar energy availability.
 
 In regions like California, solar power is abundant but fluctuates throughout the day due to weather conditions and changing sunlight levels. As a result, much of the potential solar energy generated is either underutilized or inefficiently consumed.
