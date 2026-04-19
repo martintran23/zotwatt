@@ -146,7 +146,7 @@ export default function App() {
     setGeoStatus(null)
     const q = placeQuery.trim()
     if (!q) {
-      setError('Enter an address or city, or use your location.')
+      setError('Enter your city and state, or use your location.')
       return
     }
     setError(null)
@@ -259,7 +259,6 @@ export default function App() {
         showSuggestDropdown={showSuggestDropdown}
         showSuggestEmpty={showSuggestEmpty}
         onPickSuggestion={(s) => void completeWithSuggestion(s)}
-        suggestHint={suggestHint}
       />
     )
   }

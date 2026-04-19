@@ -60,7 +60,7 @@ export function DashboardShell({ active, onTab, onFab, onSms, children }: Props)
   return (
     <div className={`zw-app${smsLayout ? ' zw-app--sms' : ''}`}>
       <header className={`zw-header${smsLayout ? ' zw-header--sms' : ''}`}>
-        <div className="zw-logo">ZotWatt</div>
+        <div className="zw-logo">SolarShift</div>
         {smsLayout && (
           <nav className="zw-header-links" aria-label="Main sections">
             <button type="button" className="zw-header-link" onClick={() => onTab('flow')}>

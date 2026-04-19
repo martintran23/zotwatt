@@ -1,4 +1,4 @@
-import { AddressSearchBar } from '../components/AddressSearchBar.tsx'
+import { useEffect, useState } from 'react'
 import type { AddressSuggestion } from '../lib/addressAutocomplete'
 
 type Props = {
@@ -14,7 +14,83 @@ type Props = {
   showSuggestDropdown: boolean
   showSuggestEmpty: boolean
   onPickSuggestion: (s: AddressSuggestion) => void
-  suggestHint: string
+}
+
+function splitPlace(q: string): { city: string; state: string } {
+  const t = q.trim()
+  if (!t) return { city: '', state: '' }
+  const i = t.lastIndexOf(',')
+  if (i <= 0 || i >= t.length - 1) return { city: t, state: '' }
+  return { city: t.slice(0, i).trim(), state: t.slice(i + 1).trim() }
+}
+
+function buildPlaceQuery(city: string, state: string): string {
+  const c = city.trim()
+  const s = state.trim()
+  if (c && s) return `${c}, ${s}`
+  return c || s
+}
+
+function IconBell() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path
+        d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"
+        stroke="currentColor"
+        strokeWidth="1.75"
+        strokeLinecap="round"
+      />
+      <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
+    </svg>
+  )
+}
+
+function IconUser() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <circle cx="12" cy="8" r="4" stroke="currentColor" strokeWidth="1.75" />
+      <path d="M6 20c0-4 3-6 6-6s6 2 6 6" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
+    </svg>
+  )
+}
+
+function IconCheck() {
+  return (
+    <svg className="ss-trust__icon" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path
+        d="M20 6L9 17l-5-5"
+        stroke="currentColor"
+        strokeWidth="2.25"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  )
+}
+
+function HeroDecor() {
+  return (
+    <div className="ss-hero__decor" aria-hidden>
+      <div className="ss-hero__glow" />
+      <svg className="ss-hero__sun" viewBox="0 0 120 120" fill="none">
+        <circle cx="60" cy="60" r="28" fill="var(--zw-primary)" opacity="0.98" />
+        <circle cx="60" cy="60" r="36" stroke="var(--zw-primary)" strokeWidth="2" strokeDasharray="6 8" opacity="0.22" />
+        <circle cx="60" cy="60" r="46" stroke="var(--zw-primary)" strokeWidth="1.5" strokeDasharray="4 10" opacity="0.12" />
+        <circle cx="60" cy="60" r="56" stroke="var(--zw-primary)" strokeWidth="1" strokeDasharray="3 12" opacity="0.08" />
+      </svg>
+      <svg className="ss-hero__wave" viewBox="0 0 1440 220" preserveAspectRatio="none" fill="none">
+        <path
+          d="M0 115 C 220 55, 440 165, 720 95 C 1000 35, 1220 145, 1440 75 L 1440 220 L 0 220 Z"
+          fill="var(--zw-secondary-soft)"
+          opacity="0.92"
+        />
+        <path
+          d="M0 135 C 300 70, 520 175, 780 105 C 1040 48, 1260 158, 1440 95 L 1440 220 L 0 220 Z"
+          fill="rgb(135 206 235 / 0.42)"
+        />
+      </svg>
+    </div>
+  )
 }
 
 export function AddressWelcome({
@@ -30,81 +106,239 @@ export function AddressWelcome({
   showSuggestDropdown,
   showSuggestEmpty,
   onPickSuggestion,
-  suggestHint,
 }: Props) {
+  const init = splitPlace(placeQuery)
+  const [city, setCity] = useState(init.city)
+  const [state, setState] = useState(init.state)
+  const [email, setEmail] = useState('')
+
+  useEffect(() => {
+    const { city: c, state: s } = splitPlace(placeQuery)
+    setCity(c)
+    setState(s)
+  }, [placeQuery])
+
+  useEffect(() => {
+    onPlaceQueryChange(buildPlaceQuery(city, state))
+  }, [city, state, onPlaceQueryChange])
+
+  const onKeyEnter = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      e.preventDefault()
+      void onSubmitSearch()
+    }
+  }
+
   return (
-    <div className="zw-welcome">
-      <div className="zw-welcome__brand">
-        <div className="zw-welcome__logo" aria-hidden>
-          ZW
+    <div className="ss-landing">
+      <header className="ss-header">
+        <div className="ss-header__logo">SolarShift</div>
+        <nav className="ss-header__nav" aria-label="Site">
+          <a className="ss-header__link" href="#ss-features">
+            Dashboard
+          </a>
+          <a className="ss-header__link" href="#ss-why">
+            Why It Matters
+          </a>
+        </nav>
+        <div className="ss-header__actions">
+          <button type="button" className="ss-header__icon-btn" aria-label="Notifications">
+            <IconBell />
+          </button>
+          <button type="button" className="ss-header__icon-btn" aria-label="Account">
+            <IconUser />
+          </button>
         </div>
-        <h1 className="zw-welcome__title">ZotWatt</h1>
-        <p className="zw-welcome__tagline">
-          Plan flexible loads around forecast sunshine. Enter where your system lives to load modeled solar for that
-          spot.
-        </p>
+      </header>
+
+      <section className="ss-hero">
+        <HeroDecor />
+        <div className="ss-hero__inner">
+          <p className="ss-hero__badge">
+            <span className="ss-hero__badge-emoji" aria-hidden>
+              🌱
+            </span>{' '}
+            Nurturing your digital ecosystem
+          </p>
+          <h1 className="ss-hero__title">
+            Optimize Your Home <span className="ss-hero__title-accent">for the Sun.</span>
+          </h1>
+          <p className="ss-hero__sub">
+            Personalized solar forecasts designed to help you transition from managing a utility to nurturing a
+            sustainable sanctuary.
+          </p>
+
+          <div className="ss-form-card">
+            <div className="address-stack ss-form-card__stack">
+              <div className="ss-form-row2">
+                <div className="ss-field">
+                  <label htmlFor="ss-city">City</label>
+                  <input
+                    id="ss-city"
+                    name="city"
+                    type="text"
+                    autoComplete="address-level2"
+                    placeholder="e.g. San Francisco"
+                    value={city}
+                    onChange={(e) => setCity(e.target.value)}
+                    onKeyDown={onKeyEnter}
+                    disabled={loading}
+                  />
+                </div>
+                <div className="ss-field">
+                  <label htmlFor="ss-state">State</label>
+                  <input
+                    id="ss-state"
+                    name="state"
+                    type="text"
+                    autoComplete="address-level1"
+                    placeholder="e.g. CA"
+                    value={state}
+                    onChange={(e) => setState(e.target.value)}
+                    onKeyDown={onKeyEnter}
+                    disabled={loading}
+                  />
+                </div>
+              </div>
+
+              {showSuggestDropdown && (
+                <ul className="search-results" role="listbox" aria-label="Place suggestions">
+                  {suggestBusy && searchHits.length === 0 && (
+                    <li className="search-results__hint" role="status">
+                      Searching places…
+                    </li>
+                  )}
+                  {showSuggestEmpty && (
+                    <li className="search-results__hint">No matching places. Try another spelling.</li>
+                  )}
+                  {searchHits.map((s) => (
+                    <li key={s.source === 'aws' ? s.placeId : `om-${s.id}`}>
+                      <button
+                        type="button"
+                        role="option"
+                        onMouseDown={(e) => e.preventDefault()}
+                        onClick={() => void onPickSuggestion(s)}
+                        disabled={loading}
+                      >
+                        {s.label}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+
+            <div className="ss-field ss-form-card__email">
+              <label htmlFor="ss-email">Email address</label>
+              <input
+                id="ss-email"
+                name="email"
+                type="email"
+                autoComplete="email"
+                placeholder="your@email.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                disabled={loading}
+              />
+            </div>
+
+            <button type="button" className="ss-cta" onClick={() => void onSubmitSearch()} disabled={loading}>
+              {loading ? 'Loading forecast…' : 'Get My Solar Forecast'}
+              {!loading && <span aria-hidden> →</span>}
+            </button>
+
+            <p className="ss-form-hint">
+              Suggestions appear as you type (city and state). Forecast uses Open‑Meteo; results are estimates only.
+            </p>
+          </div>
+
+          <div className="ss-trust">
+            <span className="ss-trust__item">
+              <IconCheck /> Secure data
+            </span>
+            <span className="ss-trust__item">
+              <IconCheck /> 100% green energy
+            </span>
+          </div>
+
+          <p className="ss-geo">
+            <button type="button" className="zw-inline-link" onClick={onGeolocation} disabled={loading}>
+              Use my current location
+            </button>
+          </p>
+
+          {geoStatus && (
+            <p
+              className={geoStatus.startsWith('Could not') ? 'zw-error ss-landing__alert' : 'ss-geo-status'}
+              role="status"
+            >
+              {geoStatus}
+            </p>
+          )}
+
+          {error && (
+            <p className="zw-error ss-landing__alert" role="alert">
+              {error}
+            </p>
+          )}
+        </div>
+      </section>
+
+      <div id="ss-features" className="ss-spotlight">
+        <article className="ss-feature-card ss-feature-card--split">
+          <div className="ss-feature-card__copy">
+            <div className="ss-feature-card__icon" aria-hidden>
+              ✦
+            </div>
+            <h2>AI-Powered Insights</h2>
+            <p>
+              We analyze millions of data points to predict the exact moment your home can be most efficient—so you can
+              align flexible loads with peak solar.
+            </p>
+          </div>
+          <div className="ss-feature-card__figure" aria-hidden>
+            <img
+              className="ss-feature-card__img"
+              src="/sms-house.png"
+              alt=""
+              width={480}
+              height={320}
+              loading="lazy"
+            />
+          </div>
+        </article>
+        <article className="ss-feature-card ss-feature-card--stat">
+          <div className="ss-feature-stat">30%</div>
+          <p className="ss-feature-stat__copy">
+            Average reduction in energy costs for SolarShift members who shift usage to solar peaks.
+          </p>
+          <button type="button" className="ss-feature-link">
+            Learn more ↗
+          </button>
+        </article>
+        <section id="ss-why" className="ss-wide-card">
+          <div className="ss-wide-card__copy">
+            <h2>Live monitoring</h2>
+            <p className="ss-wide-card__lead">
+              Real-time data visualization that feels like nature. Watch your home&apos;s energy flow through beautiful,
+              organic waves.
+            </p>
+          </div>
+          <div className="ss-wide-card__visual" role="img" aria-label="Preview placeholder">
+            <span>Coming soon: Energy flow view</span>
+          </div>
+        </section>
       </div>
 
-      <div className="address-stack">
-        <AddressSearchBar
-          id="welcome-address"
-          value={placeQuery}
-          onChange={onPlaceQueryChange}
-          onSubmit={() => void onSubmitSearch()}
-          onGeolocation={onGeolocation}
-          disabled={loading}
-          placeholder="City, neighborhood, or address"
-        />
-
-        {showSuggestDropdown && (
-          <ul className="search-results" role="listbox" aria-label="Place suggestions">
-            {suggestBusy && searchHits.length === 0 && (
-              <li className="search-results__hint" role="status">
-                Searching places…
-              </li>
-            )}
-            {showSuggestEmpty && (
-              <li className="search-results__hint">No matching places. Try another spelling.</li>
-            )}
-            {searchHits.map((s) => (
-              <li key={s.source === 'aws' ? s.placeId : `om-${s.id}`}>
-                <button
-                  type="button"
-                  role="option"
-                  onMouseDown={(e) => e.preventDefault()}
-                  onClick={() => void onPickSuggestion(s)}
-                  disabled={loading}
-                >
-                  {s.label}
-                </button>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
-
-      {loading && (
-        <p className="zw-welcome__status" role="status">
-          Loading…
-        </p>
-      )}
-
-      {geoStatus && (
-        <p
-          className={geoStatus.startsWith('Could not') ? 'zw-error' : 'zw-welcome__status'}
-          role="status"
-        >
-          {geoStatus}
-        </p>
-      )}
-
-      {error && (
-        <p className="zw-error" role="alert">
-          {error}
-        </p>
-      )}
-
-      <p className="zw-welcome__hint">{suggestHint}</p>
+      <footer className="ss-footer">
+        <div className="ss-footer__brand">SolarShift</div>
+        <nav className="ss-footer__links" aria-label="Legal">
+          <a href="#ss-why">Privacy policy</a>
+          <a href="#ss-why">Terms of service</a>
+          <a href="#ss-why">Contact support</a>
+        </nav>
+        <p className="ss-footer__copy">© {new Date().getFullYear()} SolarShift. Nurturing your digital ecosystem.</p>
+      </footer>
     </div>
   )
 }

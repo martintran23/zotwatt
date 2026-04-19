@@ -60,7 +60,7 @@ export function LocationModal({
             onSubmit={() => void onSubmitSearch()}
             onGeolocation={onGeolocation}
             disabled={loading}
-            placeholder="City, neighborhood, or address"
+            placeholder="City and state (e.g. Irvine, CA)"
           />
 
           {showSuggestDropdown && (
@@ -103,8 +103,8 @@ export function LocationModal({
 
         <p className="zw-muted-small">{suggestHint}</p>
 
-        <div style={{ display: 'flex', gap: 10, marginTop: 16, justifyContent: 'flex-end' }}>
-          <button type="button" className="zw-btn-secondary" onClick={onClose}>
+        <div className="zw-modal-footer">
+          <button type="button" className="zw-btn-secondary zw-btn-secondary--compact" onClick={onClose}>
             Close
           </button>
         </div>
