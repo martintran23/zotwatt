@@ -357,15 +357,6 @@ export function WhyItMattersPage({ onViewDashboard, onGetSmartAlerts }: Props) {
         </div>
       </section>
 
-      <footer className="wim-footer">
-        <div className="wim-footer__brand">SolarShift</div>
-        <nav className="wim-footer__links" aria-label="Legal">
-          <a href="#">Privacy Policy</a>
-          <a href="#">Terms of Service</a>
-          <a href="#">Contact Support</a>
-        </nav>
-        <p className="wim-footer__copy">© {new Date().getFullYear()} SolarShift. Nurturing your digital ecosystem.</p>
-      </footer>
     </div>
   )
 }

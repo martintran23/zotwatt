@@ -246,15 +246,6 @@ export function AddressWelcome({
         </section>
       </div>
 
-      <footer className="ss-footer">
-        <div className="ss-footer__brand">SolarShift</div>
-        <nav className="ss-footer__links" aria-label="Legal">
-          <a href="#ss-why">Privacy policy</a>
-          <a href="#ss-why">Terms of service</a>
-          <a href="#ss-why">Contact support</a>
-        </nav>
-        <p className="ss-footer__copy">© {new Date().getFullYear()} SolarShift. Nurturing your digital ecosystem.</p>
-      </footer>
     </div>
   )
 }

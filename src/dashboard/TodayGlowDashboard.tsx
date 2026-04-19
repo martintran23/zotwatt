@@ -8,11 +8,16 @@ type Props = {
   onOpenSchedule: () => void
 }
 
-/** Six-vertex lightning (closed zigzag); stays legible at small sizes in the Solar Window chip. */
 function IconBolt({ className }: { className?: string }) {
   return (
-    <svg className={className} width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
-      <path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z" />
+    <svg className={className} width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path
+        d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   )
 }
@@ -415,15 +420,6 @@ export function TodayGlowDashboard({ hours, timeZone, selectedPlace, kWp, onOpen
         </article>
       </div>
 
-      <footer className="sd-glow__footer">
-        <div className="sd-glow__footer-brand">SolarShift</div>
-        <nav className="sd-glow__footer-links" aria-label="Legal">
-          <a href="#">Privacy Policy</a>
-          <a href="#">Terms of Service</a>
-          <a href="#">Contact Support</a>
-        </nav>
-        <p className="sd-glow__footer-copy">© {new Date().getFullYear()} SolarShift. Nurturing your digital ecosystem.</p>
-      </footer>
     </div>
   )
 }
