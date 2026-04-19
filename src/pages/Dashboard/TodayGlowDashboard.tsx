@@ -1,16 +1,23 @@
-import type { HourEstimate } from '../lib/solarModel'
+import type { HourEstimate } from "../../lib/solarModel";
 
 type Props = {
-  hours: HourEstimate[]
-  timeZone: string
-  selectedPlace: string
-  kWp: string
-  onOpenSchedule: () => void
-}
+  hours: HourEstimate[];
+  timeZone: string;
+  selectedPlace: string;
+  kWp: string;
+  onOpenSchedule: () => void;
+};
 
 function IconBolt({ className }: { className?: string }) {
   return (
-    <svg className={className} width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden>
+    <svg
+      className={className}
+      width="22"
+      height="22"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden
+    >
       <path
         d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"
         stroke="currentColor"
@@ -19,12 +26,19 @@ function IconBolt({ className }: { className?: string }) {
         strokeLinejoin="round"
       />
     </svg>
-  )
+  );
 }
 
 function IconSun({ className }: { className?: string }) {
   return (
-    <svg className={className} width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden>
+    <svg
+      className={className}
+      width="22"
+      height="22"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden
+    >
       <circle cx="12" cy="12" r="4" fill="currentColor" />
       <path
         d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"
@@ -33,12 +47,19 @@ function IconSun({ className }: { className?: string }) {
         strokeLinecap="round"
       />
     </svg>
-  )
+  );
 }
 
 function IconClear({ className }: { className?: string }) {
   return (
-    <svg className={className} width="56" height="56" viewBox="0 0 24 24" fill="none" aria-hidden>
+    <svg
+      className={className}
+      width="56"
+      height="56"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden
+    >
       <circle cx="12" cy="12" r="4" fill="currentColor" />
       <path
         d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"
@@ -47,12 +68,19 @@ function IconClear({ className }: { className?: string }) {
         strokeLinecap="round"
       />
     </svg>
-  )
+  );
 }
 
 function IconMostlySunny({ className }: { className?: string }) {
   return (
-    <svg className={className} width="56" height="56" viewBox="0 0 24 24" fill="none" aria-hidden>
+    <svg
+      className={className}
+      width="56"
+      height="56"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden
+    >
       <circle cx="10" cy="9" r="3.5" fill="currentColor" />
       <path
         d="M10 3.5v1.5M10 14v1.5M4.5 9H6M14 9h1.5M5.93 5.43l1.06 1.06M13.01 12.51l1.06 1.06M5.93 12.57l1.06-1.06M13.01 5.49l1.06-1.06"
@@ -66,12 +94,19 @@ function IconMostlySunny({ className }: { className?: string }) {
         opacity="0.4"
       />
     </svg>
-  )
+  );
 }
 
 function IconPartlyCloudy({ className }: { className?: string }) {
   return (
-    <svg className={className} width="56" height="56" viewBox="0 0 24 24" fill="none" aria-hidden>
+    <svg
+      className={className}
+      width="56"
+      height="56"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden
+    >
       <path
         d="M6 18h12a4 4 0 0 0 0-8 4 4 0 0 0-7.75-1.08A5 5 0 0 0 6 18z"
         fill="currentColor"
@@ -79,12 +114,19 @@ function IconPartlyCloudy({ className }: { className?: string }) {
       />
       <circle cx="14" cy="10" r="3.5" fill="currentColor" />
     </svg>
-  )
+  );
 }
 
 function IconMostlyCloudy({ className }: { className?: string }) {
   return (
-    <svg className={className} width="56" height="56" viewBox="0 0 24 24" fill="none" aria-hidden>
+    <svg
+      className={className}
+      width="56"
+      height="56"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden
+    >
       <circle cx="15" cy="7" r="2.5" fill="currentColor" opacity="0.6" />
       <path
         d="M15 3v1M15 10v1M11 7h1M18 7h1"
@@ -103,12 +145,19 @@ function IconMostlyCloudy({ className }: { className?: string }) {
         fill="currentColor"
       />
     </svg>
-  )
+  );
 }
 
 function IconOvercast({ className }: { className?: string }) {
   return (
-    <svg className={className} width="56" height="56" viewBox="0 0 24 24" fill="none" aria-hidden>
+    <svg
+      className={className}
+      width="56"
+      height="56"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden
+    >
       <path
         d="M4 17h14a4 4 0 0 0 0-8 4 4 0 0 0-7.75-1.08A5 5 0 0 0 4 17z"
         fill="currentColor"
@@ -119,20 +168,33 @@ function IconOvercast({ className }: { className?: string }) {
         fill="currentColor"
       />
     </svg>
-  )
+  );
 }
 
-function WeatherIcon({ avgCloud, className }: { avgCloud: number; className?: string }) {
-  if (avgCloud < 15) return <IconClear className={className} />
-  if (avgCloud < 35) return <IconMostlySunny className={className} />
-  if (avgCloud < 55) return <IconPartlyCloudy className={className} />
-  if (avgCloud < 75) return <IconMostlyCloudy className={className} />
-  return <IconOvercast className={className} />
+function WeatherIcon({
+  avgCloud,
+  className,
+}: {
+  avgCloud: number;
+  className?: string;
+}) {
+  if (avgCloud < 15) return <IconClear className={className} />;
+  if (avgCloud < 35) return <IconMostlySunny className={className} />;
+  if (avgCloud < 55) return <IconPartlyCloudy className={className} />;
+  if (avgCloud < 75) return <IconMostlyCloudy className={className} />;
+  return <IconOvercast className={className} />;
 }
 
 function IconOpenNew({ className }: { className?: string }) {
   return (
-    <svg className={className} width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden>
+    <svg
+      className={className}
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden
+    >
       <path
         d="M14 3h7v7M10 14 21 3M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5"
         stroke="currentColor"
@@ -141,115 +203,157 @@ function IconOpenNew({ className }: { className?: string }) {
         strokeLinejoin="round"
       />
     </svg>
-  )
+  );
 }
 
 function IconArrowForward({ className }: { className?: string }) {
   return (
-    <svg className={className} width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden>
-      <path d="M5 12h14m-4-4 4 4-4 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    <svg
+      className={className}
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden
+    >
+      <path
+        d="M5 12h14m-4-4 4 4-4 4"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
-  )
+  );
 }
 
 function formatHourShort(iso: string, timeZone: string) {
   return new Intl.DateTimeFormat(undefined, {
     timeZone,
-    hour: 'numeric',
-    minute: '2-digit',
-  }).format(new Date(iso))
+    hour: "numeric",
+    minute: "2-digit",
+  }).format(new Date(iso));
 }
 
 function formatLongDate(iso: string, timeZone: string) {
   return new Intl.DateTimeFormat(undefined, {
     timeZone,
-    weekday: 'long',
-    month: 'long',
-    day: 'numeric',
-    year: 'numeric',
-  }).format(new Date(iso))
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  }).format(new Date(iso));
 }
 
-function computeSolarWindowLabel(hours: HourEstimate[], timeZone: string): string | null {
-  if (!hours.length) return null
-  let maxI = 0
-  let maxKw = 0
+function computeSolarWindowLabel(
+  hours: HourEstimate[],
+  timeZone: string,
+): string | null {
+  if (!hours.length) return null;
+  let maxI = 0;
+  let maxKw = 0;
   hours.forEach((h, i) => {
     if (h.estimatedKw > maxKw) {
-      maxKw = h.estimatedKw
-      maxI = i
+      maxKw = h.estimatedKw;
+      maxI = i;
     }
-  })
-  if (maxKw < 0.02) return null
-  const startI = Math.max(0, maxI - 1)
-  const endI = Math.min(hours.length - 1, maxI + 2)
-  const a = hours[startI].timeIso
-  const b = hours[endI].timeIso
-  return `${formatHourShort(a, timeZone)} – ${formatHourShort(b, timeZone)}`
+  });
+  if (maxKw < 0.02) return null;
+  const startI = Math.max(0, maxI - 1);
+  const endI = Math.min(hours.length - 1, maxI + 2);
+  const a = hours[startI].timeIso;
+  const b = hours[endI].timeIso;
+  return `${formatHourShort(a, timeZone)} – ${formatHourShort(b, timeZone)}`;
 }
 
-function pickChartBars(hours: HourEstimate[], barCount: number): { bars: HourEstimate[]; peakIdx: number } {
-  const daylight = hours.filter((h) => h.estimatedKw > 0.02)
-  const src = daylight.length >= 3 ? daylight : hours
-  if (!src.length) return { bars: [], peakIdx: 0 }
-  const n = src.length
-  const bars: HourEstimate[] = []
+function pickChartBars(
+  hours: HourEstimate[],
+  barCount: number,
+): { bars: HourEstimate[]; peakIdx: number } {
+  const daylight = hours.filter((h) => h.estimatedKw > 0.02);
+  const src = daylight.length >= 3 ? daylight : hours;
+  if (!src.length) return { bars: [], peakIdx: 0 };
+  const n = src.length;
+  const bars: HourEstimate[] = [];
   for (let i = 0; i < barCount; i++) {
-    const j = Math.min(n - 1, Math.round((i / (barCount - 1)) * (n - 1)))
-    bars.push(src[j])
+    const j = Math.min(n - 1, Math.round((i / (barCount - 1)) * (n - 1)));
+    bars.push(src[j]);
   }
-  const peakIdx = bars.reduce((bi, h, i, arr) => (h.estimatedKw > arr[bi].estimatedKw ? i : bi), 0)
-  return { bars, peakIdx }
+  const peakIdx = bars.reduce(
+    (bi, h, i, arr) => (h.estimatedKw > arr[bi].estimatedKw ? i : bi),
+    0,
+  );
+  return { bars, peakIdx };
 }
 
 function skyLabel(avgCloud: number): string {
-  if (avgCloud < 15) return 'Clear'
-  if (avgCloud < 35) return 'Mostly Sunny'
-  if (avgCloud < 55) return 'Partly Cloudy'
-  if (avgCloud < 75) return 'Mostly Cloudy'
-  if (avgCloud < 90) return 'Overcast'
-  return 'Heavy Overcast'
+  if (avgCloud < 15) return "Clear";
+  if (avgCloud < 35) return "Mostly Sunny";
+  if (avgCloud < 55) return "Partly Cloudy";
+  if (avgCloud < 75) return "Mostly Cloudy";
+  if (avgCloud < 90) return "Overcast";
+  return "Heavy Overcast";
 }
 
 function atmosphereCopy(avgCloud: number): string {
   if (avgCloud < 40) {
-    return 'Clear skies favor strong midday production. Ideal window for high-draw appliances and EV charging.'
+    return "Clear skies favor strong midday production. Ideal window for high-draw appliances and EV charging.";
   }
   if (avgCloud < 70) {
-    return 'High production expected during breaks in cloud cover. Good time for laundry, dishwashers, and other flexible loads.'
+    return "High production expected during breaks in cloud cover. Good time for laundry, dishwashers, and other flexible loads.";
   }
-  return 'Cloudier conditions smooth the curve; watch for brighter hours to batch discretionary usage.'
+  return "Cloudier conditions smooth the curve; watch for brighter hours to batch discretionary usage.";
 }
 
-export function TodayGlowDashboard({ hours, timeZone, selectedPlace, kWp, onOpenSchedule }: Props) {
-  const placeLabel = selectedPlace.trim() || 'Your location'
-  const dateLine = hours[0] ? formatLongDate(hours[0].timeIso, timeZone) : '—'
-  const windowLabel = computeSolarWindowLabel(hours, timeZone)
+export function TodayGlowDashboard({
+  hours,
+  timeZone,
+  selectedPlace,
+  kWp,
+  onOpenSchedule,
+}: Props) {
+  const placeLabel = selectedPlace.trim() || "Your location";
+  const dateLine = hours[0] ? formatLongDate(hours[0].timeIso, timeZone) : "—";
+  const windowLabel = computeSolarWindowLabel(hours, timeZone);
 
-  const maxKw = hours.length ? Math.max(...hours.map((h) => h.estimatedKw), 0.01) : 0.01
+  const maxKw = hours.length
+    ? Math.max(...hours.map((h) => h.estimatedKw), 0.01)
+    : 0.01;
   const avgCloud =
     hours.length > 0
       ? Math.round(
-          hours.reduce((s, h) => s + (typeof h.cloudPct === 'number' ? h.cloudPct : 50), 0) / hours.length,
+          hours.reduce(
+            (s, h) => s + (typeof h.cloudPct === "number" ? h.cloudPct : 50),
+            0,
+          ) / hours.length,
         )
-      : 50
-  const sky = skyLabel(avgCloud)
+      : 50;
+  const sky = skyLabel(avgCloud);
 
-  const mid = Math.floor(hours.length / 2)
-  const humSample = hours.find((h, i) => i >= mid && h.humidityPct != null)?.humidityPct
-  const uvSample = hours.find((h, i) => i >= mid && h.uvIndex != null)?.uvIndex
-  const humidityDisplay = humSample != null ? `${Math.round(humSample)}%` : '—'
-  const uvDisplay = uvSample != null ? `${Math.round(uvSample * 10) / 10}/10` : '—'
+  const mid = Math.floor(hours.length / 2);
+  const humSample = hours.find(
+    (h, i) => i >= mid && h.humidityPct != null,
+  )?.humidityPct;
+  const uvSample = hours.find((h, i) => i >= mid && h.uvIndex != null)?.uvIndex;
+  const humidityDisplay = humSample != null ? `${Math.round(humSample)}%` : "—";
+  const uvDisplay =
+    uvSample != null ? `${Math.round(uvSample * 10) / 10}/10` : "—";
 
-  const { bars, peakIdx } = pickChartBars(hours, 9)
-  const peakKw = Number(kWp) > 0 ? Number(kWp) : 8
-  const gridIndependent = Math.min(95, Math.round(52 + (maxKw / Math.max(peakKw, 0.1)) * 18))
+  const { bars, peakIdx } = pickChartBars(hours, 9);
+  const peakKw = Number(kWp) > 0 ? Number(kWp) : 8;
+  const gridIndependent = Math.min(
+    95,
+    Math.round(52 + (maxKw / Math.max(peakKw, 0.1)) * 18),
+  );
 
-  const co2Saved = Math.max(1, Math.round(maxKw * 12))
-  const trees = co2Saved / 23.33
-  const panelEfficiency = Math.min(99, Math.round(88 + (1 - avgCloud / 100) * 10))
+  const co2Saved = Math.max(1, Math.round(maxKw * 12));
+  const trees = co2Saved / 23.33;
+  const panelEfficiency = Math.min(
+    99,
+    Math.round(88 + (1 - avgCloud / 100) * 10),
+  );
 
-  const nB = bars.length
+  const nB = bars.length;
   const tickIdx =
     nB === 0
       ? ([] as number[])
@@ -257,22 +361,32 @@ export function TodayGlowDashboard({ hours, timeZone, selectedPlace, kWp, onOpen
         ? [0]
         : nB === 2
           ? [0, 1]
-          : [0, Math.floor(nB * 0.25), Math.floor(nB * 0.5), Math.floor(nB * 0.75), nB - 1]
+          : [
+              0,
+              Math.floor(nB * 0.25),
+              Math.floor(nB * 0.5),
+              Math.floor(nB * 0.75),
+              nB - 1,
+            ];
   const tickLabels = tickIdx.map((idx) => {
-    const iso = bars[idx]?.timeIso
-    if (!iso) return { idx, label: '—' as string }
+    const iso = bars[idx]?.timeIso;
+    if (!iso) return { idx, label: "—" as string };
     const label = new Intl.DateTimeFormat(undefined, {
       timeZone,
-      hour: '2-digit',
-      minute: '2-digit',
+      hour: "2-digit",
+      minute: "2-digit",
       hour12: false,
-    }).format(new Date(iso))
-    return { idx, label }
-  })
+    }).format(new Date(iso));
+    return { idx, label };
+  });
   const boldTickIdx =
     tickIdx.length > 0
-      ? tickIdx.reduce((best, idx) => (Math.abs(idx - peakIdx) < Math.abs(best - peakIdx) ? idx : best), tickIdx[0]!)
-      : -1
+      ? tickIdx.reduce(
+          (best, idx) =>
+            Math.abs(idx - peakIdx) < Math.abs(best - peakIdx) ? idx : best,
+          tickIdx[0]!,
+        )
+      : -1;
 
   return (
     <div className="sd-glow">
@@ -302,9 +416,15 @@ export function TodayGlowDashboard({ hours, timeZone, selectedPlace, kWp, onOpen
             <h2 className="sd-card--solar-window__headline">
               Best time to run appliances today:
               <br />
-              <span className="sd-card--solar-window__accent">{windowLabel ?? '—'}</span>
+              <span className="sd-card--solar-window__accent">
+                {windowLabel ?? "—"}
+              </span>
             </h2>
-            <button type="button" className="sd-btn-pill" onClick={onOpenSchedule}>
+            <button
+              type="button"
+              className="sd-btn-pill"
+              onClick={onOpenSchedule}
+            >
               Schedule Appliances
               <IconArrowForward />
             </button>
@@ -317,7 +437,10 @@ export function TodayGlowDashboard({ hours, timeZone, selectedPlace, kWp, onOpen
               <p className="sd-card--atmosphere__tag">Atmosphere</p>
               <h3 className="sd-card--atmosphere__sky">{sky}</h3>
             </div>
-            <WeatherIcon avgCloud={avgCloud} className="sd-card--atmosphere__weather-icon" />
+            <WeatherIcon
+              avgCloud={avgCloud}
+              className="sd-card--atmosphere__weather-icon"
+            />
           </div>
           <div className="sd-card--atmosphere__blurb">
             <p>{atmosphereCopy(avgCloud)}</p>
@@ -334,17 +457,26 @@ export function TodayGlowDashboard({ hours, timeZone, selectedPlace, kWp, onOpen
           </div>
         </article>
 
-        <section className="sd-card sd-card--chart" aria-labelledby="sd-chart-title">
+        <section
+          className="sd-card sd-card--chart"
+          aria-labelledby="sd-chart-title"
+        >
           <div className="sd-card--chart__head">
             <div>
               <h3 id="sd-chart-title" className="sd-card--chart__title">
                 Solar Intensity Forecast
               </h3>
-              <p className="sd-card--chart__sub">Real-time prediction for your panels</p>
+              <p className="sd-card--chart__sub">
+                Real-time prediction for your panels
+              </p>
             </div>
             <span className="sd-pill-kw">Kilowatts (kW)</span>
           </div>
-          <div className="sd-chart" role="img" aria-label="Solar output by time of day">
+          <div
+            className="sd-chart"
+            role="img"
+            aria-label="Solar output by time of day"
+          >
             <div className="sd-chart__grid" aria-hidden>
               <span />
               <span />
@@ -353,13 +485,13 @@ export function TodayGlowDashboard({ hours, timeZone, selectedPlace, kWp, onOpen
             </div>
             <div className="sd-chart__bars">
               {bars.map((h, i) => {
-                const pct = maxKw > 0 ? (h.estimatedKw / maxKw) * 100 : 8
-                const hPct = Math.max(12, Math.round(pct))
-                const isPeak = i === peakIdx
+                const pct = maxKw > 0 ? (h.estimatedKw / maxKw) * 100 : 8;
+                const hPct = Math.max(12, Math.round(pct));
+                const isPeak = i === peakIdx;
                 return (
                   <div key={`${h.timeIso}-${i}`} className="sd-chart__col">
                     <div
-                      className={`sd-chart__bar${isPeak ? ' sd-chart__bar--peak' : ''}`}
+                      className={`sd-chart__bar${isPeak ? " sd-chart__bar--peak" : ""}`}
                       style={{ height: `${hPct}%` }}
                       title={`${h.estimatedKw.toFixed(2)} kW`}
                     />
@@ -369,12 +501,19 @@ export function TodayGlowDashboard({ hours, timeZone, selectedPlace, kWp, onOpen
                       </div>
                     )}
                   </div>
-                )
+                );
               })}
             </div>
             <div className="sd-chart__ticks">
               {tickLabels.map(({ idx, label }) => (
-                <span key={`tick-${idx}`} className={idx === boldTickIdx && boldTickIdx >= 0 ? 'sd-chart__ticks--peak' : undefined}>
+                <span
+                  key={`tick-${idx}`}
+                  className={
+                    idx === boldTickIdx && boldTickIdx >= 0
+                      ? "sd-chart__ticks--peak"
+                      : undefined
+                  }
+                >
                   {label}
                 </span>
               ))}
@@ -394,10 +533,15 @@ export function TodayGlowDashboard({ hours, timeZone, selectedPlace, kWp, onOpen
           />
           <h4 className="sd-card--panels__title">Panel Efficiency</h4>
           <p className="sd-card--panels__text">
-            Your modeled system is operating at about {panelEfficiency}% of today&apos;s theoretical peak, based on
-            irradiance and cloud cover in the forecast.
+            Your modeled system is operating at about {panelEfficiency}% of
+            today&apos;s theoretical peak, based on irradiance and cloud cover
+            in the forecast.
           </p>
-          <button type="button" className="sd-link-details" onClick={onOpenSchedule}>
+          <button
+            type="button"
+            className="sd-link-details"
+            onClick={onOpenSchedule}
+          >
             View details <IconOpenNew />
           </button>
         </article>
@@ -405,9 +549,12 @@ export function TodayGlowDashboard({ hours, timeZone, selectedPlace, kWp, onOpen
         <article className="sd-card sd-card--eco">
           <div className="sd-card--eco__copy">
             <div className="sd-card--eco__badge">Eco Impact</div>
-            <h3 className="sd-card--eco__title">You&apos;ve saved {co2Saved} kg of CO₂ this week.</h3>
+            <h3 className="sd-card--eco__title">
+              You&apos;ve saved {co2Saved} kg of CO₂ this week.
+            </h3>
             <p className="sd-card--eco__lead">
-              That&apos;s roughly equivalent to planting <strong>{trees.toFixed(1)}</strong> young trees in your
+              That&apos;s roughly equivalent to planting{" "}
+              <strong>{trees.toFixed(1)}</strong> young trees in your
               neighborhood (illustrative).
             </p>
           </div>
@@ -427,8 +574,11 @@ export function TodayGlowDashboard({ hours, timeZone, selectedPlace, kWp, onOpen
           <a href="#">Terms of Service</a>
           <a href="#">Contact Support</a>
         </nav>
-        <p className="sd-glow__footer-copy">© {new Date().getFullYear()} SolarShift. Nurturing your digital ecosystem.</p>
+        <p className="sd-glow__footer-copy">
+          © {new Date().getFullYear()} SolarShift. Nurturing your digital
+          ecosystem.
+        </p>
       </footer>
     </div>
-  )
+  );
 }

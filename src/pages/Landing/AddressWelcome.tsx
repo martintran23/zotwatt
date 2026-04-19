@@ -1,27 +1,34 @@
-import { useRef } from 'react'
-import type { AddressSuggestion } from '../lib/addressAutocomplete'
-import { AddressSearchBar } from '../components/AddressSearchBar.tsx'
+import { useRef } from "react";
+import type { AddressSuggestion } from "../../lib/addressAutocomplete.ts";
+import { AddressSearchBar } from "../../components/AddressSearchBar.tsx";
 
 type Props = {
-  placeQuery: string
-  onPlaceQueryChange: (q: string) => void
-  welcomeEmail: string
-  onWelcomeEmailChange: (email: string) => void
-  onSubmitSearch: () => void
-  onGeolocation: () => void
-  loading: boolean
-  geoStatus: string | null
-  error: string | null
-  suggestBusy: boolean
-  searchHits: AddressSuggestion[]
-  showSuggestDropdown: boolean
-  showSuggestEmpty: boolean
-  onPickSuggestion: (s: AddressSuggestion) => void
-}
+  placeQuery: string;
+  onPlaceQueryChange: (q: string) => void;
+  welcomeEmail: string;
+  onWelcomeEmailChange: (email: string) => void;
+  onSubmitSearch: () => void;
+  onGeolocation: () => void;
+  loading: boolean;
+  geoStatus: string | null;
+  error: string | null;
+  suggestBusy: boolean;
+  searchHits: AddressSuggestion[];
+  showSuggestDropdown: boolean;
+  showSuggestEmpty: boolean;
+  onPickSuggestion: (s: AddressSuggestion) => void;
+};
 
 function IconCheck() {
   return (
-    <svg className="ss-trust__icon" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
+    <svg
+      className="ss-trust__icon"
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden
+    >
       <path
         d="M20 6L9 17l-5-5"
         stroke="currentColor"
@@ -30,7 +37,7 @@ function IconCheck() {
         strokeLinejoin="round"
       />
     </svg>
-  )
+  );
 }
 
 function HeroDecor() {
@@ -38,12 +45,47 @@ function HeroDecor() {
     <div className="ss-hero__decor" aria-hidden>
       <div className="ss-hero__glow" />
       <svg className="ss-hero__sun" viewBox="0 0 120 120" fill="none">
-        <circle cx="60" cy="60" r="28" fill="var(--zw-primary)" opacity="0.98" />
-        <circle cx="60" cy="60" r="36" stroke="var(--zw-primary)" strokeWidth="2" strokeDasharray="6 8" opacity="0.22" />
-        <circle cx="60" cy="60" r="46" stroke="var(--zw-primary)" strokeWidth="1.5" strokeDasharray="4 10" opacity="0.12" />
-        <circle cx="60" cy="60" r="56" stroke="var(--zw-primary)" strokeWidth="1" strokeDasharray="3 12" opacity="0.08" />
+        <circle
+          cx="60"
+          cy="60"
+          r="28"
+          fill="var(--zw-primary)"
+          opacity="0.98"
+        />
+        <circle
+          cx="60"
+          cy="60"
+          r="36"
+          stroke="var(--zw-primary)"
+          strokeWidth="2"
+          strokeDasharray="6 8"
+          opacity="0.22"
+        />
+        <circle
+          cx="60"
+          cy="60"
+          r="46"
+          stroke="var(--zw-primary)"
+          strokeWidth="1.5"
+          strokeDasharray="4 10"
+          opacity="0.12"
+        />
+        <circle
+          cx="60"
+          cy="60"
+          r="56"
+          stroke="var(--zw-primary)"
+          strokeWidth="1"
+          strokeDasharray="3 12"
+          opacity="0.08"
+        />
       </svg>
-      <svg className="ss-hero__wave" viewBox="0 0 1440 220" preserveAspectRatio="none" fill="none">
+      <svg
+        className="ss-hero__wave"
+        viewBox="0 0 1440 220"
+        preserveAspectRatio="none"
+        fill="none"
+      >
         <path
           d="M0 115 C 220 55, 440 165, 720 95 C 1000 35, 1220 145, 1440 75 L 1440 220 L 0 220 Z"
           fill="var(--zw-secondary-soft)"
@@ -55,7 +97,7 @@ function HeroDecor() {
         />
       </svg>
     </div>
-  )
+  );
 }
 
 export function AddressWelcome({
@@ -74,15 +116,19 @@ export function AddressWelcome({
   showSuggestEmpty,
   onPickSuggestion,
 }: Props) {
-  const heroRef = useRef<HTMLElement | null>(null)
+  const heroRef = useRef<HTMLElement | null>(null);
   const scrollToHero = () => {
-    heroRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-  }
+    heroRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
 
   return (
     <div className="ss-landing">
       <header className="ss-header">
-        <button type="button" className="ss-header__logo" onClick={scrollToHero}>
+        <button
+          type="button"
+          className="ss-header__logo"
+          onClick={scrollToHero}
+        >
           SolarShift
         </button>
       </header>
@@ -93,15 +139,16 @@ export function AddressWelcome({
           <p className="ss-hero__badge">
             <span className="ss-hero__badge-emoji" aria-hidden>
               🌱
-            </span>{' '}
+            </span>{" "}
             Nurturing your digital ecosystem
           </p>
           <h1 className="ss-hero__title">
-            Optimize Your Home <span className="ss-hero__title-accent">for the Sun.</span>
+            Optimize Your Home{" "}
+            <span className="ss-hero__title-accent">for the Sun.</span>
           </h1>
           <p className="ss-hero__sub">
-            Personalized solar forecasts designed to help you transition from managing a utility to nurturing a
-            sustainable sanctuary.
+            Personalized solar forecasts designed to help you transition from
+            managing a utility to nurturing a sustainable sanctuary.
           </p>
 
           <div className="ss-form-card">
@@ -117,17 +164,23 @@ export function AddressWelcome({
               />
 
               {showSuggestDropdown && (
-                <ul className="search-results" role="listbox" aria-label="Place suggestions">
+                <ul
+                  className="search-results"
+                  role="listbox"
+                  aria-label="Place suggestions"
+                >
                   {suggestBusy && searchHits.length === 0 && (
                     <li className="search-results__hint" role="status">
                       Searching places…
                     </li>
                   )}
                   {showSuggestEmpty && (
-                    <li className="search-results__hint">No matching places. Try another spelling.</li>
+                    <li className="search-results__hint">
+                      No matching places. Try another spelling.
+                    </li>
                   )}
                   {searchHits.map((s) => (
-                    <li key={s.source === 'aws' ? s.placeId : `om-${s.id}`}>
+                    <li key={s.source === "aws" ? s.placeId : `om-${s.id}`}>
                       <button
                         type="button"
                         role="option"
@@ -157,14 +210,20 @@ export function AddressWelcome({
               />
             </div>
 
-            <button type="button" className="ss-cta" onClick={() => void onSubmitSearch()} disabled={loading}>
-              {loading ? 'Loading forecast…' : 'Get My Solar Forecast'}
+            <button
+              type="button"
+              className="ss-cta"
+              onClick={() => void onSubmitSearch()}
+              disabled={loading}
+            >
+              {loading ? "Loading forecast…" : "Get My Solar Forecast"}
               {!loading && <span aria-hidden> →</span>}
             </button>
 
             <p className="ss-form-hint">
-              Use the pin to save your location, enter your email, then tap Get My Solar Forecast. Suggestions appear as
-              you type. Forecast uses Open‑Meteo; results are estimates only.
+              Use the pin to save your location, enter your email, then tap Get
+              My Solar Forecast. Suggestions appear as you type. Forecast uses
+              Open‑Meteo; results are estimates only.
             </p>
           </div>
 
@@ -179,7 +238,11 @@ export function AddressWelcome({
 
           {geoStatus && (
             <p
-              className={geoStatus.startsWith('Could not') ? 'zw-error ss-landing__alert' : 'ss-geo-status'}
+              className={
+                geoStatus.startsWith("Could not")
+                  ? "zw-error ss-landing__alert"
+                  : "ss-geo-status"
+              }
               role="status"
             >
               {geoStatus}
@@ -202,8 +265,9 @@ export function AddressWelcome({
             </div>
             <h2>AI-Powered Insights</h2>
             <p>
-              We analyze millions of data points to predict the exact moment your home can be most efficient—so you can
-              align flexible loads with peak solar.
+              We analyze millions of data points to predict the exact moment
+              your home can be most efficient—so you can align flexible loads
+              with peak solar.
             </p>
           </div>
           <div className="ss-feature-card__figure" aria-hidden>
@@ -220,7 +284,8 @@ export function AddressWelcome({
         <article className="ss-feature-card ss-feature-card--stat">
           <div className="ss-feature-stat">30%</div>
           <p className="ss-feature-stat__copy">
-            Average reduction in energy costs for SolarShift members who shift usage to solar peaks.
+            Average reduction in energy costs for SolarShift members who shift
+            usage to solar peaks.
           </p>
           <button type="button" className="ss-feature-link">
             Learn more ↗
@@ -230,11 +295,15 @@ export function AddressWelcome({
           <div className="ss-wide-card__copy">
             <h2>Live monitoring</h2>
             <p className="ss-wide-card__lead">
-              Real-time data visualization that feels like nature. Watch your home&apos;s energy flow through beautiful,
-              organic waves.
+              Real-time data visualization that feels like nature. Watch your
+              home&apos;s energy flow through beautiful, organic waves.
             </p>
           </div>
-          <div className="ss-wide-card__visual" role="img" aria-label="Preview placeholder">
+          <div
+            className="ss-wide-card__visual"
+            role="img"
+            aria-label="Preview placeholder"
+          >
             <span>Coming soon: Energy flow view</span>
           </div>
         </section>
@@ -247,8 +316,11 @@ export function AddressWelcome({
           <a href="#ss-why">Terms of service</a>
           <a href="#ss-why">Contact support</a>
         </nav>
-        <p className="ss-footer__copy">© {new Date().getFullYear()} SolarShift. Nurturing your digital ecosystem.</p>
+        <p className="ss-footer__copy">
+          © {new Date().getFullYear()} SolarShift. Nurturing your digital
+          ecosystem.
+        </p>
       </footer>
     </div>
-  )
+  );
 }
