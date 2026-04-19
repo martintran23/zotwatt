@@ -1,43 +1,38 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { AddressSearchBar } from './components/AddressSearchBar.tsx'
 import {
   fetchAddressSuggestions,
   isAwsAutocompleteEnabled,
   resolveAddressSuggestion,
   type AddressSuggestion,
 } from './lib/addressAutocomplete'
+import { estimateHourlyPower, rankPeaks, splitByLocalDay, type HourEstimate } from './lib/solarModel'
 import { isPostalOnlyQuery } from './lib/placeQueryPolicy'
 import { adviceForDay, APPLIANCES } from './lib/appliances'
 import { fetchSolarForecast } from './lib/openMeteo'
-import {
-  estimateHourlyPower,
-  rankPeaks,
-  splitByLocalDay,
-  type HourEstimate,
-} from './lib/solarModel'
-import { HourlyChart } from './components/HourlyChart.tsx'
+import { isWelcomeEmailValid } from './lib/welcomeEmail'
+import { DashboardShell, type Tab } from './dashboard/DashboardShell.tsx'
+import { TodayGlowDashboard } from './dashboard/TodayGlowDashboard.tsx'
+import { ForecastTab } from './dashboard/ForecastTab.tsx'
+import { ScheduleTab } from './dashboard/ScheduleTab.tsx'
+import { ImpactTab } from './dashboard/ImpactTab.tsx'
+import { SmsTab } from './dashboard/SmsTab.tsx'
+import { NotificationsTab } from './dashboard/NotificationsTab.tsx'
+import { LocationModal } from './dashboard/LocationModal.tsx'
+import { AddressWelcome } from './dashboard/AddressWelcome.tsx'
+import { WhyItMattersPage } from './dashboard/WhyItMattersPage.tsx'
 
-type Screen = 'address' | 'report'
-
-function IconBack() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
-      <path
-        d="M15 18l-6-6 6-6"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  )
-}
+type Phase = 'address' | 'dashboard'
 
 export default function App() {
-  const [screen, setScreen] = useState<Screen>('address')
+  const [phase, setPhase] = useState<Phase>('address')
+  const [tab, setTab] = useState<Tab>('flow')
+  const [whyMatters, setWhyMatters] = useState(false)
+  const [locationOpen, setLocationOpen] = useState(false)
+
   const [placeQuery, setPlaceQuery] = useState('')
+  const [welcomeEmail, setWelcomeEmail] = useState('')
   const [searchHits, setSearchHits] = useState<AddressSuggestion[]>([])
-  const [selectedPlace, setSelectedPlace] = useState<string>('')
+  const [selectedPlace, setSelectedPlace] = useState('')
 
   const [lat, setLat] = useState('')
   const [lon, setLon] = useState('')
@@ -142,6 +137,10 @@ export default function App() {
     async (s: AddressSuggestion) => {
       setSearchHits([])
       setError(null)
+      if (phase === 'address' && !isWelcomeEmailValid(welcomeEmail)) {
+        setError('Enter a valid email, then choose a place or tap Get My Solar Forecast.')
+        return
+      }
       try {
         const { latitude, longitude, label } = await resolveAddressSuggestion(s)
         setLat(String(latitude))
@@ -150,19 +149,40 @@ export default function App() {
         const ok = await runForecast(latitude, longitude)
         if (ok) {
           setPlaceQuery('')
-          setScreen('report')
+          setWelcomeEmail('')
+          setLocationOpen(false)
+          setPhase('dashboard')
         }
       } catch (e) {
         setError(e instanceof Error ? e.message : 'Could not resolve this place.')
       }
     },
-    [runForecast],
+    [phase, welcomeEmail, runForecast],
   )
 
   const submitAddressSearch = async () => {
     setGeoStatus(null)
+    const requireWelcomeEmail = phase === 'address'
+    if (requireWelcomeEmail && !isWelcomeEmailValid(welcomeEmail)) {
+      setError('Enter a valid email, then run your forecast.')
+      return
+    }
+    setError(null)
     const q = placeQuery.trim()
     if (!q) {
+      const la = Number(lat)
+      const lo = Number(lon)
+      if (selectedPlace === 'Your location' && Number.isFinite(la) && Number.isFinite(lo)) {
+        const ok = await runForecast(la, lo)
+        if (ok) {
+          setPlaceQuery('')
+          setWelcomeEmail('')
+          setLocationOpen(false)
+          setPhase('dashboard')
+        }
+        return
+      }
+      setError('Enter a city, state, or address, or use your location.')
       setError('Enter a city and state, or use your location.')
       return
     }
@@ -171,7 +191,6 @@ export default function App() {
       setError('Use a city and state, not a postal or ZIP code.')
       return
     }
-    setError(null)
     try {
       const suggestions = await fetchAddressSuggestions(q)
       if (!suggestions.length) {
@@ -190,7 +209,7 @@ export default function App() {
     }
   }
 
-  const useGeolocation = () => {
+  const useGeolocation = useCallback(() => {
     if (!navigator.geolocation) {
       setGeoStatus('Geolocation is not available in this browser.')
       return
@@ -206,25 +225,46 @@ export default function App() {
         setLon(String(lo.toFixed(5)))
         setSelectedPlace('Your location')
         setGeoStatus(null)
+        if (phase === 'address') {
+          setPlaceQuery('')
+          setGeoStatus('Location saved. Enter your email, then tap Get My Solar Forecast.')
+          return
+        }
         const ok = await runForecast(la, lo)
-        if (ok) setScreen('report')
+        if (ok) {
+          setPlaceQuery('')
+          setLocationOpen(false)
+          setPhase('dashboard')
+        }
       },
       () => {
         setGeoStatus('Could not read location. Check browser permissions.')
       },
       { enableHighAccuracy: false, timeout: 12_000 },
     )
-  }
+  }, [phase, runForecast])
 
-  const goBackToAddress = () => {
-    setScreen('address')
+  const goBackToAddress = useCallback(() => {
+    setPhase('address')
+    setWhyMatters(false)
+    setTab('flow')
     setEstimates([])
     setError(null)
     setSearchHits([])
+    setLocationOpen(false)
     if (selectedPlace && selectedPlace !== 'Your location') {
       setPlaceQuery(selectedPlace)
+    } else {
+      setPlaceQuery('')
     }
-  }
+  }, [selectedPlace])
+
+  const scrollAddressLandingToInput = useCallback(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+    window.setTimeout(() => {
+      document.getElementById('ss-address')?.focus({ preventScroll: false })
+    }, 350)
+  }, [])
 
   const refreshReport = useCallback(async () => {
     const latitude = Number(lat)
@@ -235,7 +275,22 @@ export default function App() {
   const firstDay = days[0]
   const firstDayHours = firstDay?.hours ?? []
   const peaks = rankPeaks(firstDayHours, 4)
-  const advice = adviceForDay(firstDayHours, peaks, timezone)
+
+  const goTab = useCallback((t: Tab) => {
+    setWhyMatters(false)
+    setTab(t)
+  }, [])
+
+  const scrollAppToTop = useCallback(() => {
+    window.scrollTo(0, 0)
+    document.documentElement.scrollTop = 0
+    document.body.scrollTop = 0
+    document.querySelector<HTMLElement>('.sd-main-scroll')?.scrollTo(0, 0)
+  }, [])
+
+  useEffect(() => {
+    scrollAppToTop()
+  }, [phase, tab, whyMatters, scrollAppToTop])
 
   const trimmedQuery = placeQuery.trim()
   const showSuggestEmpty =
@@ -334,99 +389,73 @@ export default function App() {
     )
   }
 
+  const main = whyMatters ? (
+    <WhyItMattersPage onViewDashboard={() => goTab('flow')} onGetSmartAlerts={() => goTab('notifications')} />
+  ) : loading && estimates.length === 0 ? (
+    <p className="zw-muted-small" role="status">
+      Loading forecast…
+    </p>
+  ) : tab === 'flow' ? (
+    <TodayGlowDashboard
+      hours={firstDayHours}
+      timeZone={timezone}
+      selectedPlace={selectedPlace}
+      kWp={kWp}
+      onOpenSchedule={() => goTab('schedule')}
+    />
+  ) : tab === 'forecast' ? (
+    <ForecastTab days={days} timeZone={timezone} peaks={peaks} />
+  ) : tab === 'schedule' ? (
+    <ScheduleTab
+      selectedPlace={selectedPlace}
+      kWp={kWp}
+      performanceRatio={performanceRatio}
+      onKwp={setKWp}
+      onPr={setPerformanceRatio}
+      onRefresh={() => void refreshReport()}
+      loading={loading}
+      error={error}
+      onReturnToAddress={goBackToAddress}
+    />
+  ) : tab === 'impact' ? (
+    <ImpactTab days={days} />
+  ) : tab === 'notifications' ? (
+    <NotificationsTab />
+  ) : (
+    <SmsTab />
+  )
+
   return (
-    <div className="report">
-      <div className="report__top">
-        <button type="button" className="btn-back" onClick={goBackToAddress}>
-          <IconBack />
-          Back
-        </button>
-        <p className="report__location">
-          Location: <strong>{selectedPlace || '-'}</strong>
-        </p>
-      </div>
+    <>
+      <DashboardShell
+        active={tab}
+        onTab={goTab}
+        onFab={() => setLocationOpen(true)}
+        onSms={() => goTab('notifications')}
+        whyMatters={whyMatters}
+        onOpenWhyMatters={() => setWhyMatters(true)}
+        onBrandClick={goBackToAddress}
+      >
+        {main}
+      </DashboardShell>
 
-      <h1 className="report__title">Solar outlook &amp; appliance tips</h1>
-
-      <section className="panel panel--system" aria-labelledby="system-heading">
-        <h2 id="system-heading">Your system</h2>
-        <div className="form-grid">
-          <div className="field">
-            <label htmlFor="kwp">DC capacity (kWp)</label>
-            <input id="kwp" inputMode="decimal" value={kWp} onChange={(e) => setKWp(e.target.value)} />
-          </div>
-          <div className="field">
-            <label htmlFor="pr">Performance ratio</label>
-            <input
-              id="pr"
-              inputMode="decimal"
-              value={performanceRatio}
-              onChange={(e) => setPerformanceRatio(e.target.value)}
-            />
-            <small>Typical range ~0.72–0.85 (losses).</small>
-          </div>
-        </div>
-        <div className="row" style={{ marginTop: '1rem' }}>
-          <button type="button" className="btn-primary" onClick={() => void refreshReport()} disabled={loading}>
-            {loading ? 'Updating…' : 'Update forecast'}
-          </button>
-        </div>
-        {error && (
-          <p className="error" role="alert">
-            {error}
-          </p>
-        )}
-      </section>
-
-      {firstDayHours.length > 0 && (
-        <section className="panel" aria-labelledby="today-heading">
-          <div className="results-head">
-            <h2 id="today-heading">Today: {firstDay?.label}</h2>
-            <span className="meta">TZ: {timezone}</span>
-          </div>
-          <HourlyChart hours={firstDayHours} timeZone={timezone} title="Estimated AC output (kW)" />
-          {peaks.length > 0 && (
-            <p className="meta">
-              Strongest modeled hours:{' '}
-              {peaks.map((p, i) => (
-                <span key={p.timeIso}>
-                  {new Intl.DateTimeFormat(undefined, {
-                    timeZone: timezone,
-                    hour: 'numeric',
-                    minute: '2-digit',
-                  }).format(new Date(p.timeIso))}{' '}
-                  (~{p.estimatedKw.toFixed(2)} kW)
-                  {i < peaks.length - 1 ? ' · ' : ''}
-                </span>
-              ))}
-            </p>
-          )}
-        </section>
-      )}
-
-      {days.length > 1 && (
-        <section className="panel" aria-labelledby="next-heading">
-          <h2 id="next-heading">Upcoming days</h2>
-          {days.slice(1, 3).map((d) => (
-            <HourlyChart key={d.dayKey} hours={d.hours} timeZone={timezone} title={d.label} />
-          ))}
-        </section>
-      )}
-
-      <section className="panel" aria-labelledby="advice-heading">
-        <h2 id="advice-heading">Appliances ({APPLIANCES.length})</h2>
-        <p className="meta" style={{ marginTop: '-0.5rem', marginBottom: '1rem' }}>
-          Deferrable loads gain the most from peak solar. Typical power is indicative only.
-        </p>
-        <ul className="advice-list">
-          {advice.map(({ appliance, summary }) => (
-            <li key={appliance.id}>
-              <strong>{appliance.label}</strong>
-              <p>{summary}</p>
-            </li>
-          ))}
-        </ul>
-      </section>
-    </div>
+      <LocationModal
+        open={locationOpen}
+        onClose={() => setLocationOpen(false)}
+        placeQuery={placeQuery}
+        onPlaceQueryChange={setPlaceQuery}
+        onSubmitSearch={() => void submitAddressSearch()}
+        onGeolocation={useGeolocation}
+        loading={loading}
+        geoStatus={geoStatus}
+        error={error}
+        suggestBusy={suggestBusy}
+        searchHits={searchHits}
+        showSuggestDropdown={showSuggestDropdown}
+        showSuggestEmpty={showSuggestEmpty}
+        onPickSuggestion={(s) => void completeWithSuggestion(s)}
+        suggestHint={suggestHint}
+      />
+    </>
   )
 }
