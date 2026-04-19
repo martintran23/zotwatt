@@ -10,8 +10,14 @@ type Props = {
 
 function IconBolt({ className }: { className?: string }) {
   return (
-    <svg className={className} width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
-      <path d="M11 21h-1l1-7H7.5c-.58 0-.57-.32-.38-.66.19-.34.05-.08.07-.12C8.48 10.94 10.42 7.87 13 3h1l-1 7h3.5c.49 0 .56.33.47.73l-.07.3C17.96 17.04 16 20 11 21z" />
+    <svg className={className} width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path
+        d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   )
 }

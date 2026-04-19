@@ -12,7 +12,6 @@ import { DashboardShell, type Tab } from './dashboard/DashboardShell.tsx'
 import { TodayGlowDashboard } from './dashboard/TodayGlowDashboard.tsx'
 import { ForecastTab } from './dashboard/ForecastTab.tsx'
 import { ScheduleTab } from './dashboard/ScheduleTab.tsx'
-import { ImpactTab } from './dashboard/ImpactTab.tsx'
 import { SmsTab } from './dashboard/SmsTab.tsx'
 import { NotificationsTab } from './dashboard/NotificationsTab.tsx'
 import { LocationModal } from './dashboard/LocationModal.tsx'
@@ -324,7 +323,7 @@ export default function App() {
       onReturnToAddress={goBackToAddress}
     />
   ) : tab === 'impact' ? (
-    <ImpactTab days={days} />
+    <NotificationsTab />
   ) : tab === 'notifications' ? (
     <NotificationsTab />
   ) : (
@@ -337,7 +336,7 @@ export default function App() {
         active={tab}
         onTab={goTab}
         onFab={() => setLocationOpen(true)}
-        onSms={() => goTab('notifications')}
+        onHome={goBackToAddress}
         whyMatters={whyMatters}
         onOpenWhyMatters={() => setWhyMatters(true)}
         onCloseWhyMatters={() => setWhyMatters(false)}

@@ -309,7 +309,7 @@ export function WhyItMattersPage({ onViewDashboard, onGetSmartAlerts }: Props) {
                 &quot;My home reduced hundreds of kilograms of carbon emissions this year just by shifting my dishwasher
                 to run when the sun is strongest.&quot;
               </p>
-              <footer>— Sarah, SolarShift user</footer>
+              <footer>— Atticus Wong, SolarShift user</footer>
             </blockquote>
           </div>
         </div>
