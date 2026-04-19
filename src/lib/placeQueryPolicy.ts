@@ -1,4 +1,4 @@
-/** Block postal-only searches and postal-like place rows (ambiguous vs city/state). */
+/** Detect postal-only queries; filter postal-like GeoNames rows; label checks for raw ZIP rows. */
 
 const US_ZIP_ALONE = /^\d{5}(-\d{4})?$/
 

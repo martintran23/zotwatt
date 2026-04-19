@@ -7,7 +7,6 @@ import {
 } from './lib/addressAutocomplete'
 import { estimateHourlyPower, rankPeaks, splitByLocalDay, type HourEstimate } from './lib/solarModel'
 import { isPostalOnlyQuery } from './lib/placeQueryPolicy'
-import { adviceForDay, APPLIANCES } from './lib/appliances'
 import { fetchSolarForecast } from './lib/openMeteo'
 import { isWelcomeEmailValid } from './lib/welcomeEmail'
 import { DashboardShell, type Tab } from './dashboard/DashboardShell.tsx'
@@ -71,12 +70,6 @@ export default function App() {
     let cancelled = false
     const timer = window.setTimeout(async () => {
       const fid = ++suggestFetchId.current
-      if (isPostalOnlyQuery(q)) {
-        setSearchHits([])
-        setSuggestLastResolvedQuery(q)
-        setSuggestBusy(false)
-        return
-      }
       setSuggestBusy(true)
       try {
         const hits = await fetchAddressSuggestions(q)
@@ -182,20 +175,18 @@ export default function App() {
         }
         return
       }
-      setError('Enter a city, state, or address, or use your location.')
       setError('Enter a city and state, or use your location.')
-      return
-    }
-    if (isPostalOnlyQuery(q)) {
-      setSearchHits([])
-      setError('Use a city and state, not a postal or ZIP code.')
       return
     }
     try {
       const suggestions = await fetchAddressSuggestions(q)
       if (!suggestions.length) {
         setSearchHits([])
-        setError('No places matched. Try a nearby city or spelling.')
+        setError(
+          isPostalOnlyQuery(q)
+            ? 'No cities found for that postal code. Try another code or enter a city and state.'
+            : 'No places matched. Try a nearby city or spelling.',
+        )
         return
       }
       if (suggestions.length === 1) {
@@ -302,90 +293,31 @@ export default function App() {
     trimmedQuery.length >= SUGGEST_MIN_CHARS &&
     (suggestBusy || searchHits.length > 0 || showSuggestEmpty)
 
-  if (screen === 'address') {
+  const suggestHint = `Suggestions appear as you type (${SUGGEST_MIN_CHARS}+ characters). ${
+    isAwsAutocompleteEnabled()
+      ? 'Addresses and city names use Amazon Location; full US ZIP or Canadian postal codes use Open‑Meteo so we can list cities tied to that code.'
+      : 'Place search uses Open‑Meteo.'
+  } Pick a city for a code (the forecast needs a place, not the code alone). Press Enter or the arrow to search. Forecast uses Open‑Meteo radiation and clouds; results are estimates, not meter‑grade.`
+
+  if (phase === 'address') {
     return (
-      <div className="welcome">
-        <div className="welcome__brand">
-          <div className="welcome__logo" aria-hidden>
-            ZW
-          </div>
-          <h1 className="welcome__title">ZotWatt</h1>
-          <p className="welcome__tagline">
-            Plan flexible loads around forecast sunshine, built with an Anteater-spirit nod to campus
-            and community.
-          </p>
-        </div>
-
-        <div className="address-stack">
-          <AddressSearchBar
-            id="address"
-            value={placeQuery}
-            onChange={setPlaceQuery}
-            onSubmit={() => void submitAddressSearch()}
-            onGeolocation={useGeolocation}
-            disabled={loading}
-            placeholder="City and state (e.g. Irvine, CA)"
-          />
-
-          {showSuggestDropdown && (
-            <ul
-              className="search-results"
-              role="listbox"
-              aria-label="Place suggestions"
-            >
-              {suggestBusy && searchHits.length === 0 && (
-                <li className="search-results__hint" role="status">
-                  Searching places…
-                </li>
-              )}
-              {showSuggestEmpty && (
-                <li className="search-results__hint">
-                  {isPostalOnlyQuery(trimmedQuery)
-                    ? 'ZIP and postal codes are not accepted. Enter a city and state.'
-                    : 'No matching places. Try another spelling.'}
-                </li>
-              )}
-              {searchHits.map((s) => (
-                <li key={s.source === 'aws' ? s.placeId : `om-${s.id}`}>
-                  <button
-                    type="button"
-                    role="option"
-                    onMouseDown={(e) => e.preventDefault()}
-                    onClick={() => void completeWithSuggestion(s)}
-                    disabled={loading}
-                  >
-                    {s.label}
-                  </button>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-
-        {loading && (
-          <p className="loading-banner" role="status">
-            Loading…
-          </p>
-        )}
-
-        {geoStatus && (
-          <p className={geoStatus.startsWith('Could not') ? 'error' : 'loading-banner'} role="status">
-            {geoStatus}
-          </p>
-        )}
-
-        {error && (
-          <p className="error" role="alert">
-            {error}
-          </p>
-        )}
-
-        <p className="welcome__hint">
-          <strong>City and state</strong> or city name—not ZIP or postal codes. Suggestions from 2+ characters
-          {isAwsAutocompleteEnabled() ? ' (Amazon Location)' : ' (Open‑Meteo)'}
-          . Press <strong>Enter</strong> to search. Solar forecast from Open‑Meteo—estimates only, not meter-grade.
-        </p>
-      </div>
+      <AddressWelcome
+        placeQuery={placeQuery}
+        onPlaceQueryChange={setPlaceQuery}
+        welcomeEmail={welcomeEmail}
+        onWelcomeEmailChange={setWelcomeEmail}
+        onSubmitSearch={() => void submitAddressSearch()}
+        onGeolocation={useGeolocation}
+        loading={loading}
+        geoStatus={geoStatus}
+        error={error}
+        suggestBusy={suggestBusy}
+        searchHits={searchHits}
+        showSuggestDropdown={showSuggestDropdown}
+        showSuggestEmpty={showSuggestEmpty}
+        onPickSuggestion={(s) => void completeWithSuggestion(s)}
+        onBrandClick={scrollAddressLandingToInput}
+      />
     )
   }
 

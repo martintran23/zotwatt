@@ -1,4 +1,5 @@
 import type { AddressSuggestion } from '../lib/addressAutocomplete'
+import { isPostalOnlyQuery } from '../lib/placeQueryPolicy'
 import { AddressSearchBar } from '../components/AddressSearchBar.tsx'
 
 type Props = {
@@ -125,7 +126,11 @@ export function AddressWelcome({
                     </li>
                   )}
                   {showSuggestEmpty && (
-                    <li className="search-results__hint">No matching places. Try another spelling.</li>
+                    <li className="search-results__hint">
+                      {isPostalOnlyQuery(placeQuery.trim())
+                        ? 'No cities found for that postal code. Try another code or type a city and state.'
+                        : 'No matching places. Try another spelling.'}
+                    </li>
                   )}
                   {searchHits.map((s) => (
                     <li key={s.source === 'aws' ? s.placeId : `om-${s.id}`}>
