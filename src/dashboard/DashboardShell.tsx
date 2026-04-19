@@ -96,7 +96,8 @@ export function DashboardShell({
   onCloseWhyMatters,
 }: Props) {
   const smsLayout = active === 'sms'
-  const fullWidthLayout = active === 'sms' || active === 'notifications'
+  /** Only SMS uses the compact strip without sidebar; other tabs keep the left rail. */
+  const fullWidthLayout = active === 'sms'
   const showFab = !fullWidthLayout
 
   /** Why It Matters is only reflected in the top nav; sidebar stays neutral (no false “Impact” active). */
