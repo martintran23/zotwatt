@@ -110,7 +110,7 @@ export function AddressWelcome({
             Optimize Your Home <span className="ss-hero__title-accent">Around the Sun.</span>
           </h1>
           <p className="ss-hero__sub">
-            Personalized solar forecasts that tell you the best times to use energy based on your home's solar generation—saving
+            Personalized solar forecasts that tell you the best times to use energy based on your home's solar generation, saving
              money and the environment.
           </p>
 
