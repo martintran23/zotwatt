@@ -8,6 +8,9 @@ type Props = {
   onFab: () => void
   onSms: () => void
   children: ReactNode
+  whyMatters: boolean
+  onOpenWhyMatters: () => void
+  onCloseWhyMatters: () => void
 }
 
 function IconOptimize({ className }: { className?: string }) {
@@ -82,14 +85,26 @@ function IconAccount() {
   )
 }
 
-export function DashboardShell({ active, onTab, onFab, onSms, children }: Props) {
+export function DashboardShell({
+  active,
+  onTab,
+  onFab,
+  onSms,
+  children,
+  whyMatters,
+  onOpenWhyMatters,
+  onCloseWhyMatters,
+}: Props) {
   const smsLayout = active === 'sms'
   const showFab = active !== 'sms'
+
+  /** Why It Matters is only reflected in the top nav; sidebar stays neutral (no false “Impact” active). */
+  const sideNavActive = (tab: Tab) => !whyMatters && active === tab
 
   const navItem = (tab: Tab, label: string, Icon: typeof IconOptimize, variant: 'side' | 'mobile') => (
     <button
       type="button"
-      className={`sd-nav-item sd-nav-item--${variant}${active === tab ? ' sd-nav-item--active' : ''}`}
+      className={`sd-nav-item sd-nav-item--${variant}${sideNavActive(tab) ? ' sd-nav-item--active' : ''}`}
       onClick={() => onTab(tab)}
     >
       <Icon />
@@ -103,10 +118,20 @@ export function DashboardShell({ active, onTab, onFab, onSms, children }: Props)
         <div className="sd-topnav__inner">
           <div className="sd-topnav__brand">SolarShift</div>
           <div className="sd-topnav__links">
-            <span className="sd-topnav__link sd-topnav__link--active">Dashboard</span>
-            <a className="sd-topnav__link" href="#" onClick={(e) => e.preventDefault()}>
+            <button
+              type="button"
+              className={`sd-topnav__link sd-topnav__link--btn${!whyMatters ? ' sd-topnav__link--active' : ''}`}
+              onClick={onCloseWhyMatters}
+            >
+              Dashboard
+            </button>
+            <button
+              type="button"
+              className={`sd-topnav__link sd-topnav__link--btn${whyMatters ? ' sd-topnav__link--active' : ''}`}
+              onClick={onOpenWhyMatters}
+            >
               Why It Matters
-            </a>
+            </button>
           </div>
           <div className="sd-topnav__actions">
             <button type="button" className="sd-icon-btn" aria-label="SMS alerts" onClick={onSms}>
@@ -155,7 +180,11 @@ export function DashboardShell({ active, onTab, onFab, onSms, children }: Props)
         )}
 
         <div className={`sd-main-scroll${smsLayout ? ' sd-main-scroll--sms' : ''}`}>
-          <main className={`sd-main${showFab ? ' sd-main--fab' : ''}`}>{children}</main>
+          <main
+            className={`sd-main${showFab ? ' sd-main--fab' : ''}${whyMatters ? ' sd-main--why' : ''}`}
+          >
+            {children}
+          </main>
         </div>
       </div>
 

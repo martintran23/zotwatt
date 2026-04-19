@@ -16,12 +16,14 @@ import { ImpactTab } from './dashboard/ImpactTab.tsx'
 import { SmsTab } from './dashboard/SmsTab.tsx'
 import { LocationModal } from './dashboard/LocationModal.tsx'
 import { AddressWelcome } from './dashboard/AddressWelcome.tsx'
+import { WhyItMattersPage } from './dashboard/WhyItMattersPage.tsx'
 
 type Phase = 'address' | 'dashboard'
 
 export default function App() {
   const [phase, setPhase] = useState<Phase>('address')
   const [tab, setTab] = useState<Tab>('flow')
+  const [whyMatters, setWhyMatters] = useState(false)
   const [locationOpen, setLocationOpen] = useState(false)
 
   const [placeQuery, setPlaceQuery] = useState('')
@@ -229,6 +231,7 @@ export default function App() {
 
   const goBackToAddress = useCallback(() => {
     setPhase('address')
+    setWhyMatters(false)
     setTab('flow')
     setEstimates([])
     setError(null)
@@ -250,6 +253,11 @@ export default function App() {
   const firstDay = days[0]
   const firstDayHours = firstDay?.hours ?? []
   const peaks = rankPeaks(firstDayHours, 4)
+
+  const goTab = useCallback((t: Tab) => {
+    setWhyMatters(false)
+    setTab(t)
+  }, [])
 
   const trimmedQuery = placeQuery.trim()
   const showSuggestEmpty =
@@ -286,46 +294,50 @@ export default function App() {
     )
   }
 
-  const main =
-    loading && estimates.length === 0 ? (
-      <p className="zw-muted-small" role="status">
-        Loading forecast…
-      </p>
-    ) : tab === 'flow' ? (
-      <TodayGlowDashboard
-        hours={firstDayHours}
-        timeZone={timezone}
-        selectedPlace={selectedPlace}
-        kWp={kWp}
-        onOpenSchedule={() => setTab('schedule')}
-      />
-    ) : tab === 'forecast' ? (
-      <ForecastTab days={days} timeZone={timezone} peaks={peaks} />
-    ) : tab === 'schedule' ? (
-      <ScheduleTab
-        selectedPlace={selectedPlace}
-        kWp={kWp}
-        performanceRatio={performanceRatio}
-        onKwp={setKWp}
-        onPr={setPerformanceRatio}
-        onRefresh={() => void refreshReport()}
-        loading={loading}
-        error={error}
-        onReturnToAddress={goBackToAddress}
-      />
-    ) : tab === 'impact' ? (
-      <ImpactTab days={days} />
-    ) : (
-      <SmsTab />
-    )
+  const main = whyMatters ? (
+    <WhyItMattersPage onViewDashboard={() => goTab('flow')} onGetSmartAlerts={() => goTab('sms')} />
+  ) : loading && estimates.length === 0 ? (
+    <p className="zw-muted-small" role="status">
+      Loading forecast…
+    </p>
+  ) : tab === 'flow' ? (
+    <TodayGlowDashboard
+      hours={firstDayHours}
+      timeZone={timezone}
+      selectedPlace={selectedPlace}
+      kWp={kWp}
+      onOpenSchedule={() => goTab('schedule')}
+    />
+  ) : tab === 'forecast' ? (
+    <ForecastTab days={days} timeZone={timezone} peaks={peaks} />
+  ) : tab === 'schedule' ? (
+    <ScheduleTab
+      selectedPlace={selectedPlace}
+      kWp={kWp}
+      performanceRatio={performanceRatio}
+      onKwp={setKWp}
+      onPr={setPerformanceRatio}
+      onRefresh={() => void refreshReport()}
+      loading={loading}
+      error={error}
+      onReturnToAddress={goBackToAddress}
+    />
+  ) : tab === 'impact' ? (
+    <ImpactTab days={days} />
+  ) : (
+    <SmsTab />
+  )
 
   return (
     <>
       <DashboardShell
         active={tab}
-        onTab={setTab}
+        onTab={goTab}
         onFab={() => setLocationOpen(true)}
-        onSms={() => setTab('sms')}
+        onSms={() => goTab('sms')}
+        whyMatters={whyMatters}
+        onOpenWhyMatters={() => setWhyMatters(true)}
+        onCloseWhyMatters={() => setWhyMatters(false)}
       >
         {main}
       </DashboardShell>
