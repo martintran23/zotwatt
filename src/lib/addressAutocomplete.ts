@@ -80,7 +80,7 @@ export async function fetchAddressSuggestions(query: string): Promise<AddressSug
   const { enabled, apiKey, region } = getAwsPlacesEnv()
 
   // Full US ZIP / CA postal: use Open‑Meteo only. Amazon Places often returns rows whose primary label is the code
-  // itself (we drop those), and it does not expose postcode→locality the same way—so Westminster, CA for 92683
+  // itself (we drop those), and it does not expose postcode→locality the same way, so Westminster, CA for 92683
   // comes from Open‑Meteo's `postcodes` index, not from filtering AWS alone.
   if (postalOnly) {
     return suggestionsFromOpenMeteo(q, true)
