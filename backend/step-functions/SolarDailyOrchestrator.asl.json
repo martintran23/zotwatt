@@ -1,0 +1,70 @@
+{
+  "StartAt": "ScanDatabase",
+  "States": {
+    "ScanDatabase": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "OutputPath": "$.Payload",
+      "Parameters": {
+        "FunctionName": "arn:aws:lambda:us-west-2:230407673954:function:get-solar-subscribers"
+      },
+      "Next": "IterateUsers"
+    },
+    "IterateUsers": {
+      "Type": "Map",
+      "ItemProcessor": {
+        "ProcessorConfig": {
+          "Mode": "INLINE"
+        },
+        "StartAt": "CallAIWorkflow",
+        "States": {
+          "CallAIWorkflow": {
+            "Type": "Task",
+            "Resource": "arn:aws:states:::states:startExecution.sync:2",
+            "ResultPath": "$.AI_Response",
+            "ResultSelector": {
+              "recommendations.$": "$.Output.recommendations"
+            },
+            "Parameters": {
+              "StateMachineArn": "arn:aws:states:us-west-2:230407673954:stateMachine:SolarEnergyOptimizerWorkflow",
+              "Input": {
+                "latitude.$": "$.latitude",
+                "longitude.$": "$.longitude",
+                "email.$": "$.email"
+              }
+            },
+            "Next": "FormatForAutomation"
+          },
+          "FormatForAutomation": {
+            "Type": "Task",
+            "Resource": "arn:aws:states:::lambda:invoke",
+            "OutputPath": "$.Payload",
+            "Parameters": {
+              "FunctionName": "arn:aws:lambda:us-west-2:230407673954:function:solar-automation-adaptor",
+              "Payload": {
+                "recommendations.$": "$.AI_Response.recommendations",
+                "email.$": "$.email"
+              }
+            },
+            "Next": "SendEmail"
+          },
+          "SendEmail": {
+            "Type": "Task",
+            "Resource": "arn:aws:states:::lambda:invoke",
+            "OutputPath": "$.Payload",
+            "Parameters": {
+              "FunctionName": "arn:aws:lambda:us-west-2:230407673954:function:send-solar-notification",
+              "Payload": {
+                "email.$": "$.email",
+                "message.$": "$.advice"
+              }
+            },
+            "End": true
+          }
+        }
+      },
+      "ItemsPath": "$.user_list",
+      "End": true
+    }
+  }
+}
