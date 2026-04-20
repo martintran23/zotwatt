@@ -266,7 +266,7 @@ export function WhyItMattersPage() {
             </h1>
             <p className="wim-hero__lede">
               Understanding how your home aligns with the sun isn’t just about
-              saving money—it’s about using energy more efficiently and living
+              saving money; it’s about using energy more efficiently and living
               more sustainably.
             </p>
           </div>

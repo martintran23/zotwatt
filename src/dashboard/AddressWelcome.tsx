@@ -156,7 +156,7 @@ export function AddressWelcome({
           </h1>
           <p className="ss-hero__sub">
             Personalized solar forecasts that tell you the best times to use
-            energy based on your home's solar generation—saving money and the
+            energy based on your home's solar generation, saving money and the
             environment.
           </p>
 
