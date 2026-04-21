@@ -1,6 +1,6 @@
 # ☀️ WattTime
 
-**Live demo:** [https://main.d3aftn56t13u83.amplifyapp.com](https://main.d3aftn56t13u83.amplifyapp.com)
+**Live demo:** [https://main.d3aftn56t13u83.amplifyapp.com](https://main.d3aftn56t13u83.amplifyapp.com) *(currently down due to expired AWS Amplify/services)*
 
 WattTime is a solar usage optimizer that helps users decide the best times to run household appliances based on solar energy availability.
 
